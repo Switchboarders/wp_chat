@@ -1,0 +1,71 @@
+# How WP Chat works
+
+## Components
+
+```
+ Visitor's browser ──HTTPS──▶ reverse proxy ──▶ switchboard-chat ──▶ Matrix homeserver ◀── respondents
+        ▲                                                                                (Element, …)
+        └── loads the widget from WordPress (JS + CSS + settings only)
+```
+
+| Part | Role |
+|---|---|
+| **WP Chat plugin** (this project) | Adds the widget to your pages, stores its settings, provides the admin screen and the suggested privacy text. |
+| **Widget** (`wp-chat/assets/chat.js`, plain JavaScript) | Runs in the visitor's browser: bubble, window, consent notice, messages. Talks **directly** to the chat server. |
+| **Chat server** (switchboard-chat) | Receives visitor messages, creates an end-to-end encrypted Matrix room for the respondents, pushes their replies back. |
+| **Respondents** | Answer from any Matrix client. |
+
+WordPress is **not** in the message path: it never receives, relays or stores a message.
+
+## What happens, step by step
+
+1. A page loads. If the chat should be displayed on it (settings), the plugin adds the widget's
+   CSS/JS and an empty container; the widget starts as a small bubble.
+2. The visitor clicks the bubble: the window opens with the **consent notice** (what is kept, for how
+   long, who to contact). Nothing is sent yet.
+3. The visitor presses start: the widget calls the chat server (`POST /web/session`). The server
+   checks that the page's origin is allowed, creates an in-memory session and sets one cookie
+   with a random identifier (`HttpOnly; Secure; SameSite=None`).
+4. The widget opens a live connection (`GET /web/stream`, server-sent events) to receive replies.
+5. The first message makes the server create the Matrix room and invite the active respondents.
+   Each message is a `POST /web/message`.
+6. A respondent's reply is pushed through the live connection and shown in the window.
+7. The chat ends when the visitor presses **End chat** (`POST /web/end`), a respondent types `!fin`,
+   or the idle timeout passes. The room is left and forgotten and the session disappears. **Quick
+   exit** ends the chat (best effort) and replaces the page with a neutral site.
+
+The API in detail is in the chat server's `docs/web-chat.md`.
+
+## What is stored, and where
+
+| Data | Where | Kept |
+|---|---|---|
+| Plugin settings | WordPress database (`wp_options`, key `wp_chat_options`) | until you delete the plugin |
+| Message text | browser memory (the open window) and the chat server's memory in transit; Matrix room (encrypted) while the chat lasts | gone on reload (browser); never written to disk or logs by the server; room deleted at the end |
+| Visitor identifier | cookie `wpchat` in the browser; its hash in the chat server's memory | until the chat ends or times out |
+| Visitor IP address | chat server memory, for rate limiting | at most one hour |
+| Anything about the visitor on WordPress | **nothing** | – |
+
+The widget uses **no** `localStorage`, no analytics, no third-party scripts or fonts. A page reload
+loses the on-screen conversation by design (the server keeps no transcript to restore).
+
+## Security model
+
+- **Origin allow-list:** the server only answers the website addresses listed in `WEB_ALLOWED_ORIGINS`
+  (CORS plus an explicit `Origin` check on every call), so another site cannot use a visitor's cookie.
+- **Cookie:** random, HTTP-only (scripts cannot read it), HTTPS-only.
+- **Limits:** message size and rate, new sessions per IP and simultaneous chats are capped by the server.
+- **Output:** respondent text is displayed as plain text (`textContent`), never as HTML.
+- **Confidentiality:** the Matrix room is end-to-end encrypted; the browser-to-server link is HTTPS.
+  The "one-on-one" appearance is deliberate: the visitor sees one generic respondent name.
+
+## Browser support
+
+Any current browser with `fetch` and `EventSource` (Chrome, Edge, Firefox, Safari). The chat cookie
+must not be blocked: it is first-party when the chat server is a sub-domain of the website's
+domain (recommended), third-party otherwise (see TROUBLESHOOTING.md).
+
+## Related documents
+
+[INSTALL.md](INSTALL.md) · [CONFIGURATION.md](CONFIGURATION.md) · [TROUBLESHOOTING.md](TROUBLESHOOTING.md) ·
+[law25.md](law25.md)
