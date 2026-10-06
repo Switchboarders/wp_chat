@@ -25,6 +25,7 @@ zip -r wp-chat.zip wp-chat -x "*.DS_Store"
 | Person responsible for privacy | name shown in the consent notice (required by Law 25) |
 | Retention sentence | must match the backend: `WEB_IDLE_TIMEOUT_MIN` (default 24 h) |
 | Quick exit URL | where the "Quick exit" button sends the visitor (default a neutral site) |
+| Show the chat on | **All pages** (default), or **Only the selected pages**: tick the pages in the list (sub-pages are indented). Optionally tick "Also show on blog posts and the latest-posts home page". With "selected", the chat is hidden everywhere else, including search results and archives |
 
 The widget stays **invisible until the Backend URL is set**.
 
@@ -45,6 +46,7 @@ The widget stays **invisible until the Backend URL is set**.
 
 | Symptom | Fix |
 |---|---|
+| No button on one page | "Only the selected pages" is on and that page is not ticked (or it is a blog post/home page: tick the extra checkbox) |
 | No button | Backend URL empty, or a cache/optimization plugin serves an old page: clear the cache |
 | "Connection problem" at start | Backend URL not https, wrong host, or `WEB_ALLOWED_ORIGINS` on the backend does not exactly equal this site's address (`https://www.site.ca` ≠ `https://site.ca`; add both, comma separated) |
 | Works on your machine, not in Safari/Firefox private mode | the browser blocks third-party cookies: the backend should be a sub-domain of the **same registrable domain** as the site (e.g. WordPress `www.aideaa.ca`, backend `sbchat.aideaa.ca`) |

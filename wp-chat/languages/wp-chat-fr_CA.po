@@ -78,3 +78,21 @@ msgstr "Écrivez votre message…"
 
 msgid "Your conversation is deleted when you end the chat or after 24 hours of inactivity."
 msgstr "Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité."
+
+msgid "Show the chat on"
+msgstr "Afficher le clavardage sur"
+
+msgid "All pages"
+msgstr "Toutes les pages"
+
+msgid "Only the selected pages"
+msgstr "Seulement les pages sélectionnées"
+
+msgid "No published pages yet."
+msgstr "Aucune page publiée pour le moment."
+
+msgid "Also show on blog posts and the latest-posts home page"
+msgstr "Afficher aussi sur les articles de blogue et la page d’accueil des derniers articles"
+
+msgid "The chat is hidden everywhere else, including search results and archives."
+msgstr "Le clavardage est masqué partout ailleurs, y compris dans les résultats de recherche et les archives."
