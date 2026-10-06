@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+- Removed the "Quick exit" button and its "Quick exit URL" setting (a leftover saved value is deleted
+  automatically).
+
 ## 0.3.0
 - The widget follows the visitor's browser language (French or English) by default. New setting
   "Widget language": browser, site language, always French, always English.

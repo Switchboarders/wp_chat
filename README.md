@@ -15,7 +15,7 @@ anonymous and the conversation must stay confidential.
 - **Runs on any WordPress host.** PHP + plain JavaScript, no build step, no dependencies, no shell
   access needed.
 - **French and English**, following the visitor's browser language.
-- Choose **all pages or selected pages**; quick-exit button; accessible dialog.
+- Choose **all pages or selected pages**; accessible dialog.
 
 ```
  Visitor's browser ──HTTPS──▶ reverse proxy ──▶ switchboard-chat ──▶ Matrix ◀── respondents

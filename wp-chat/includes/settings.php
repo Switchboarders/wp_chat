@@ -11,7 +11,6 @@ function wp_chat_defaults() {
 		'privacy_url'   => '',
 		'privacy_officer' => '',
 		'retention_text' => __( 'Your conversation is deleted when you end the chat or after 24 hours of inactivity.', 'wp-chat' ),
-		'quick_exit_url' => 'https://www.google.com',
 		'language_mode' => 'auto', // 'auto' (visitor's browser), 'site', 'fr' or 'en'
 		'display_mode'  => 'all', // 'all' or 'selected'
 		'page_ids'      => array(),
@@ -49,13 +48,21 @@ function wp_chat_sanitize( $in ) {
 		'privacy_url'     => esc_url_raw( $in['privacy_url'] ?? '' ),
 		'privacy_officer' => sanitize_text_field( $in['privacy_officer'] ?? '' ),
 		'retention_text'  => sanitize_text_field( $in['retention_text'] ?? $d['retention_text'] ),
-		'quick_exit_url'  => esc_url_raw( $in['quick_exit_url'] ?? $d['quick_exit_url'] ),
 		'language_mode'   => in_array( $in['language_mode'] ?? '', array( 'auto', 'site', 'fr', 'en' ), true ) ? $in['language_mode'] : 'auto',
 		'display_mode'    => ( 'selected' === ( $in['display_mode'] ?? '' ) ) ? 'selected' : 'all',
 		'page_ids'        => array_values( array_unique( $page_ids ) ),
 		'include_posts'   => empty( $in['include_posts'] ) ? 0 : 1,
 	);
 }
+
+// The "quick exit" feature was removed in 0.4.0: drop its leftover setting
+add_action( 'admin_init', function () {
+	$o = get_option( 'wp_chat_options' );
+	if ( is_array( $o ) && array_key_exists( 'quick_exit_url', $o ) ) {
+		unset( $o['quick_exit_url'] );
+		update_option( 'wp_chat_options', $o );
+	}
+} );
 
 add_action( 'admin_init', function () {
 	register_setting( 'wp_chat', 'wp_chat_options', array( 'sanitize_callback' => 'wp_chat_sanitize' ) );
@@ -113,7 +120,6 @@ function wp_chat_settings_page() {
 		'privacy_url'     => array( __( 'Privacy policy URL', 'wp-chat' ), 'url' ),
 		'privacy_officer' => array( __( 'Person responsible for privacy (Law 25)', 'wp-chat' ), 'text' ),
 		'retention_text'  => array( __( 'Retention sentence shown before chatting', 'wp-chat' ), 'text' ),
-		'quick_exit_url'  => array( __( 'Quick exit URL', 'wp-chat' ), 'url' ),
 	);
 	echo '<div class="wrap"><h1>WP Chat</h1>';
 	settings_errors( 'wp_chat_options' );

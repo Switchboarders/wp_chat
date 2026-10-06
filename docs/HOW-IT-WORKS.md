@@ -31,8 +31,7 @@ WordPress is **not** in the message path: it never receives, relays or stores a 
    Each message is a `POST /web/message`.
 6. A respondent's reply is pushed through the live connection and shown in the window.
 7. The chat ends when the visitor presses **End chat** (`POST /web/end`), a respondent types `!fin`,
-   or the idle timeout passes. The room is left and forgotten and the session disappears. **Quick
-   exit** ends the chat (best effort) and replaces the page with a neutral site.
+   or the idle timeout passes. The room is left and forgotten and the session disappears.
 
 The API in detail is in the chat server's `docs/web-chat.md`.
 

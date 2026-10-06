@@ -64,11 +64,10 @@
 
 	var head = el('div', 'wpc-head');
 	head.appendChild(el('span', 'wpc-title', t.agentName));
-	var btnExit = el('button', 'wpc-btn', t.exit); btnExit.type = 'button';
 	var btnEnd = el('button', 'wpc-btn', t.end); btnEnd.type = 'button'; btnEnd.hidden = true;
 	var btnMin = el('button', 'wpc-btn', '–'); btnMin.type = 'button';
 	btnMin.setAttribute('aria-label', t.minimize);
-	head.appendChild(btnExit); head.appendChild(btnEnd); head.appendChild(btnMin);
+	head.appendChild(btnEnd); head.appendChild(btnMin);
 
 	var body = el('div', 'wpc-body');
 	var consent = el('div', 'wpc-consent');
@@ -158,11 +157,6 @@
 
 	btnEnd.addEventListener('click', function () {
 		api('/web/end').then(finish, finish);
-	});
-	btnExit.addEventListener('click', function () {
-		if (started) { navigator.sendBeacon && navigator.sendBeacon(cfg.backend + '/web/end'); }
-		closeStream();
-		window.location.replace(cfg.quickExit);
 	});
 	btnMin.addEventListener('click', function () { toggle(false); });
 	bubble.addEventListener('click', function () { toggle(true); });

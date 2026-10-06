@@ -59,7 +59,6 @@ add_action( 'wp_enqueue_scripts', function () {
 		'color'      => $o['color'],
 		'privacyUrl' => $o['privacy_url'],
 		'officer'    => $o['privacy_officer'],
-		'quickExit'  => $o['quick_exit_url'],
 		'langMode'   => $o['language_mode'],
 		'siteLang'   => ( 0 === strpos( determine_locale(), 'fr' ) ) ? 'fr' : 'en',
 		'strings'    => $strings,

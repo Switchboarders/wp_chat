@@ -14,7 +14,6 @@ and why not, and **Test the chat server** checks the connection from your browse
 | Privacy policy URL | `privacy_url` | empty | Link shown in the consent notice. |
 | Person responsible for privacy | `privacy_officer` | empty | Name shown in the consent notice ("Privacy contact: …"). |
 | Retention sentence | `retention_text` | "Your conversation is deleted when you end the chat or after 24 hours of inactivity." | Shown before the visitor starts. **Keep it equal to the server's `WEB_IDLE_TIMEOUT_MIN`.** |
-| Quick exit URL | `quick_exit_url` | `https://www.google.com` | Where the "Quick exit" button sends the visitor (replacing the page in history) after ending the chat. Choose a neutral, ordinary site. |
 | Widget language | `language_mode` | `auto` | See "Language". |
 | Show the chat on | `display_mode`, `page_ids`, `include_posts` | all pages | See "Where the chat appears". |
 

@@ -6,7 +6,7 @@ class El { constructor(tag){ this.tag=tag; this.attrs={}; this.children=[]; this
 function run(cfgOver, nav) {
   const made = []; const root = new El('div');
   const document = { getElementById: () => root, createElement: t => { const e = new El(t); made.push(e); return e; } };
-  const cfg = Object.assign({ backend:'https://x', color:'#000', privacyUrl:'', officer:'', quickExit:'https://q', langMode:'auto', siteLang:'en', strings, custom:{} }, cfgOver);
+  const cfg = Object.assign({ backend:'https://x', color:'#000', privacyUrl:'', officer:'', langMode:'auto', siteLang:'en', strings, custom:{} }, cfgOver);
   const window = { WPChatConfig: cfg, navigator: nav, location: {} };
   vm.runInNewContext(code, { window, document, navigator: nav, EventSource: function(){}, fetch(){}, setTimeout, clearTimeout });
   const texts = made.map(e => e.textContent).filter(Boolean);

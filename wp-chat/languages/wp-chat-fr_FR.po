@@ -46,12 +46,6 @@ msgstr "Politique de confidentialité"
 msgid "Privacy policy URL"
 msgstr "URL de la politique de confidentialité"
 
-msgid "Quick exit"
-msgstr "Sortie rapide"
-
-msgid "Quick exit URL"
-msgstr "URL de la sortie rapide"
-
 msgid "Respondent"
 msgstr "Répondant"
 

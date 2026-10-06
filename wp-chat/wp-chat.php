@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       WP Chat
  * Description:       Minimizable one-on-one chat widget that connects visitors directly to a switchboard-chat backend. No message content is stored on this server.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * License:           GPL-2.0-or-later
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WP_CHAT_VERSION', '0.3.0' );
+define( 'WP_CHAT_VERSION', '0.4.0' );
 define( 'WP_CHAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_CHAT_URL', plugin_dir_url( __FILE__ ) );
 
