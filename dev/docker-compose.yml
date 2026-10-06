@@ -1,0 +1,64 @@
+# Local WordPress tester for the wp-chat plugin.
+# Start:  docker compose up -d      Site: http://localhost:8085
+# Reset:  docker compose down -v
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wp
+      MARIADB_PASSWORD: wp
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8085:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wp
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "1"
+    volumes:
+      - wp_data:/var/www/html
+      # Live-mounted plugin: edits show up on reload.
+      - ../wp-chat:/var/www/html/wp-content/plugins/wp-chat
+
+  # One-shot installer: sets up the site, activates the plugin, points it at a backend.
+  # Run with: docker compose run --rm setup
+  setup:
+    image: wordpress:cli
+    profiles: ["setup"]
+    depends_on:
+      - wordpress
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wp
+      WORDPRESS_DB_NAME: wordpress
+      # Backend URL for the widget. Browser-reachable, https required by the plugin settings.
+      BACKEND_URL: ${BACKEND_URL:-https://localhost:3443}
+    volumes:
+      - wp_data:/var/www/html
+      - ../wp-chat:/var/www/html/wp-content/plugins/wp-chat
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        until wp db check >/dev/null 2>&1; do sleep 2; done
+        wp core is-installed || wp core install --url=http://localhost:8085 --title="WP Chat Test" \
+          --admin_user=admin --admin_password=admin --admin_email=test@example.com --skip-email
+        wp plugin activate wp-chat
+        wp option update wp_chat_options "{\"backend_url\":\"$$BACKEND_URL\"}" --format=json
+        echo "Ready: http://localhost:8085  (admin / admin at /wp-admin)"
+
+volumes:
+  db_data:
+  wp_data:

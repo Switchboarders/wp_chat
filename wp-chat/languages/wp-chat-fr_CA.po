@@ -1,0 +1,80 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Chat 0.1.0\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Accent color"
+msgstr "Couleur d’accent"
+
+msgid "Backend URL (https)"
+msgstr "URL du serveur de messagerie (https)"
+
+msgid "Connection problem. Please try again."
+msgstr "Problème de connexion. Veuillez réessayer."
+
+msgid "End chat"
+msgstr "Terminer"
+
+msgid "is typing…"
+msgstr "écrit…"
+
+msgid "I understand, start chatting"
+msgstr "J’ai compris, commencer à clavarder"
+
+msgid "Minimize chat"
+msgstr "Réduire la fenêtre"
+
+msgid "Name shown for the respondent"
+msgstr "Nom affiché pour le répondant"
+
+msgid "Open chat"
+msgstr "Ouvrir le clavardage"
+
+msgid "Person responsible for privacy (Law 25)"
+msgstr "Personne responsable de la protection des renseignements personnels (Loi 25)"
+
+msgid "Privacy contact:"
+msgstr "Responsable de la vie privée :"
+
+msgid "Privacy policy"
+msgstr "Politique de confidentialité"
+
+msgid "Privacy policy URL"
+msgstr "URL de la politique de confidentialité"
+
+msgid "Quick exit"
+msgstr "Sortie rapide"
+
+msgid "Quick exit URL"
+msgstr "URL de la sortie rapide"
+
+msgid "Respondent"
+msgstr "Répondant"
+
+msgid "Retention sentence shown before chatting"
+msgstr "Phrase sur la conservation affichée avant de clavarder"
+
+msgid "Send"
+msgstr "Envoyer"
+
+msgid "Talk to someone"
+msgstr "Parler à quelqu’un"
+
+msgid "The chat has ended and your conversation was deleted."
+msgstr "Le clavardage est terminé et votre conversation a été supprimée."
+
+msgid "The chat widget connects your browser directly to our messaging server. This website does not store the content of your conversation. The messaging server sets one cookie holding a random identifier so your conversation can continue; the conversation and the identifier are deleted when you end the chat or after a period of inactivity."
+msgstr "Le clavardage relie votre navigateur directement à notre serveur de messagerie. Ce site Web ne conserve pas le contenu de votre conversation. Le serveur de messagerie dépose un témoin (cookie) contenant un identifiant aléatoire afin que votre conversation puisse se poursuivre; la conversation et l’identifiant sont supprimés lorsque vous terminez le clavardage ou après une période d’inactivité."
+
+msgid "This chat is confidential. We do not keep your messages on this website."
+msgstr "Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur ce site Web."
+
+msgid "Type your message…"
+msgstr "Écrivez votre message…"
+
+msgid "Your conversation is deleted when you end the chat or after 24 hours of inactivity."
+msgstr "Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité."
