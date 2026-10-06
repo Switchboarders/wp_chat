@@ -4,6 +4,9 @@
 
 # Loi 25 (Québec) — notes sur la protection des renseignements personnels pour wp-chat et switchboard-chat
 
+> Pour publier des textes sur votre site Web (section de la politique de confidentialité, avis du
+> clavardage, formulaires), utilisez le [modèle pour site Web](law25-website-template.md) à adapter.
+
 Document de travail destiné à la personne responsable de la protection des renseignements personnels.
 Il décrit ce que fait le logiciel. Il ne constitue pas un avis juridique : faites réviser par un
 juriste les avis et l’évaluation des facteurs relatifs à la vie privée (EFVP) avant le lancement.

@@ -4,6 +4,9 @@
 
 # Law 25 (Quebec) — privacy notes for wp-chat and switchboard-chat
 
+> To publish texts on your website (privacy policy section, chat notice, forms), use the adaptable
+> [website template](law25-website-template.md).
+
 Working document for the person responsible for the protection of personal information.
 It describes what the software does. It is not legal advice: have a lawyer review the
 notices and the privacy impact assessment (PIA) before launch.

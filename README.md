@@ -45,6 +45,7 @@ Full steps: [docs/INSTALL.md](docs/INSTALL.md).
 | [docs/HOW-IT-WORKS.md](docs/HOW-IT-WORKS.md) | components, message flow, what is stored where, security model |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | symptoms and fixes, reading the browser's network tab |
 | [docs/law25.md](docs/law25.md) | privacy notes (Quebec Law 25) |
+| [docs/law25-website-template.md](docs/law25-website-template.md) | **template to adapt**: privacy policy section, chat notice, request procedure, volunteer commitment, incident register, impact assessment |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | layout, local test site, tests, conventions, releasing |
 | [CHANGELOG.md](CHANGELOG.md) | versions |
 

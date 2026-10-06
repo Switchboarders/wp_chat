@@ -47,6 +47,7 @@ exemple les programmes en 12 étapes), où le visiteur doit rester anonyme et la
 | [docs/fr/HOW-IT-WORKS.md](docs/fr/HOW-IT-WORKS.md) | composants, parcours des messages, ce qui est stocké et où, modèle de sécurité |
 | [docs/fr/TROUBLESHOOTING.md](docs/fr/TROUBLESHOOTING.md) | symptômes et correctifs, lire l’onglet Réseau du navigateur |
 | [docs/fr/law25.md](docs/fr/law25.md) | notes sur la protection des renseignements personnels (Loi 25 du Québec) |
+| [docs/fr/law25-website-template.md](docs/fr/law25-website-template.md) | **modèle à adapter** : section de la politique de confidentialité, avis du clavardage, procédure de demandes, engagement des bénévoles, registre des incidents, évaluation des facteurs relatifs à la vie privée |
 | [docs/fr/DEVELOPMENT.md](docs/fr/DEVELOPMENT.md) | organisation, site d’essai local, tests, conventions, publication |
 | [CHANGELOG.fr.md](CHANGELOG.fr.md) | versions |
 
