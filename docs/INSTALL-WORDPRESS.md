@@ -25,12 +25,12 @@ zip -r wp-chat.zip wp-chat -x "*.DS_Store"
 | Person responsible for privacy | name shown in the consent notice (required by Law 25) |
 | Retention sentence | must match the backend: `WEB_IDLE_TIMEOUT_MIN` (default 24 h) |
 | Quick exit URL | where the "Quick exit" button sends the visitor (default a neutral site) |
+| Widget language | **Visitor's browser language** (default), site language, always French, or always English |
 | Show the chat on | **All pages** (default), or **Only the selected pages**: tick the pages in the list (sub-pages are indented). Optionally tick "Also show on blog posts and the latest-posts home page". With "selected", the chat is hidden everywhere else, including search results and archives |
 
 The widget stays **invisible until the Backend URL is set**.
 
-3. Language: the plugin follows the site language. Quebec French is included (`fr_CA`:
-   Settings → General → Site Language → Français du Canada). Other languages show English.
+3. **Language**: by default the widget follows the **visitor's browser language**: French if the browser prefers French (any `fr-*`), otherwise English. The first supported language in the browser's preference list wins; other languages fall back to the site language. *Settings → WP Chat → Widget language* can instead follow the site language, or force always French / always English. The respondent name and the retention sentence are translated while they keep their default text; if you type your own, it is shown as typed in every language (and the retention sentence must match `WEB_IDLE_TIMEOUT_MIN`). The admin screens still follow the WordPress language (French Canada and France included).
 
 ## 3. Test (5 minutes)
 

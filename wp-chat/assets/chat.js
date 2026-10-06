@@ -11,7 +11,27 @@
 	var cfg = window.WPChatConfig;
 	var root = document.getElementById('wp-chat-root');
 	if (!cfg || !root) { return; }
-	var t = cfg.i18n;
+	// Language: the widget carries its texts in French and English and chooses in the visitor's
+	// browser (mode 'auto'), so page caches and the site language do not matter.
+	function pickLanguage(mode, siteLang, nav) {
+		if (mode === 'fr' || mode === 'en') { return mode; }
+		if (mode === 'auto' && nav) {
+			var list = (nav.languages && nav.languages.length) ? nav.languages : [nav.language || nav.userLanguage];
+			for (var i = 0; i < list.length; i++) {
+				var primary = String(list[i] || '').toLowerCase().split('-')[0];
+				if (primary === 'fr' || primary === 'en') { return primary; }
+			}
+		}
+		return siteLang === 'fr' ? 'fr' : 'en';
+	}
+	var lang = pickLanguage(cfg.langMode, cfg.siteLang, window.navigator);
+	var t = {};
+	var base = cfg.strings[lang] || cfg.strings.en;
+	Object.keys(base).forEach(function (k) { t[k] = base[k]; });
+	// Texts customized by the administrator are shown as typed, in every language
+	if (cfg.custom && cfg.custom.agentName) { t.agentName = cfg.custom.agentName; }
+	if (cfg.custom && cfg.custom.retention) { t.retention = cfg.custom.retention; }
+	root.lang = lang;
 	var es = null, started = false, typingTimer = null;
 
 	function el(tag, cls, text) {
@@ -43,7 +63,7 @@
 	win.setAttribute('aria-label', t.title);
 
 	var head = el('div', 'wpc-head');
-	head.appendChild(el('span', 'wpc-title', cfg.agentName));
+	head.appendChild(el('span', 'wpc-title', t.agentName));
 	var btnExit = el('button', 'wpc-btn', t.exit); btnExit.type = 'button';
 	var btnEnd = el('button', 'wpc-btn', t.end); btnEnd.type = 'button'; btnEnd.hidden = true;
 	var btnMin = el('button', 'wpc-btn', '–'); btnMin.type = 'button';
@@ -53,7 +73,7 @@
 	var body = el('div', 'wpc-body');
 	var consent = el('div', 'wpc-consent');
 	consent.appendChild(el('p', '', t.consent));
-	consent.appendChild(el('p', '', cfg.retention));
+	consent.appendChild(el('p', '', t.retention));
 	if (cfg.officer) { consent.appendChild(el('p', '', t.officer + ' ' + cfg.officer)); }
 	if (cfg.privacyUrl) {
 		var a = el('a', '', t.policy); a.href = cfg.privacyUrl; a.target = '_blank'; a.rel = 'noopener';
@@ -104,7 +124,7 @@
 			try { addMsg(JSON.parse(ev.data).text, false); } catch (e) { /* ignore malformed */ }
 		});
 		es.addEventListener('typing', function () {
-			typing.textContent = cfg.agentName + ' ' + t.typing;
+			typing.textContent = t.agentName + ' ' + t.typing;
 			typing.hidden = false;
 			clearTimeout(typingTimer);
 			typingTimer = setTimeout(function () { typing.hidden = true; }, 4000);

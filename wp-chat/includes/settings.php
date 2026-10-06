@@ -12,6 +12,7 @@ function wp_chat_defaults() {
 		'privacy_officer' => '',
 		'retention_text' => __( 'Your conversation is deleted when you end the chat or after 24 hours of inactivity.', 'wp-chat' ),
 		'quick_exit_url' => 'https://www.google.com',
+		'language_mode' => 'auto', // 'auto' (visitor's browser), 'site', 'fr' or 'en'
 		'display_mode'  => 'all', // 'all' or 'selected'
 		'page_ids'      => array(),
 		'include_posts' => 0,
@@ -49,6 +50,7 @@ function wp_chat_sanitize( $in ) {
 		'privacy_officer' => sanitize_text_field( $in['privacy_officer'] ?? '' ),
 		'retention_text'  => sanitize_text_field( $in['retention_text'] ?? $d['retention_text'] ),
 		'quick_exit_url'  => esc_url_raw( $in['quick_exit_url'] ?? $d['quick_exit_url'] ),
+		'language_mode'   => in_array( $in['language_mode'] ?? '', array( 'auto', 'site', 'fr', 'en' ), true ) ? $in['language_mode'] : 'auto',
 		'display_mode'    => ( 'selected' === ( $in['display_mode'] ?? '' ) ) ? 'selected' : 'all',
 		'page_ids'        => array_values( array_unique( $page_ids ) ),
 		'include_posts'   => empty( $in['include_posts'] ) ? 0 : 1,
@@ -125,6 +127,20 @@ function wp_chat_settings_page() {
 			esc_attr( $key ), esc_html( $f[0] ), esc_attr( $f[1] ), esc_attr( $o[ $key ] )
 		);
 	}
+
+	// Widget language
+	echo '<tr><th><label for="language_mode">' . esc_html__( 'Widget language', 'wp-chat' ) . '</label></th><td>';
+	echo '<select id="language_mode" name="wp_chat_options[language_mode]">';
+	$modes = array(
+		'auto' => __( 'Visitor’s browser language (French or English)', 'wp-chat' ),
+		'site' => __( 'Site language', 'wp-chat' ),
+		'fr'   => __( 'Always French', 'wp-chat' ),
+		'en'   => __( 'Always English', 'wp-chat' ),
+	);
+	foreach ( $modes as $value => $label ) {
+		printf( '<option value="%s" %s>%s</option>', esc_attr( $value ), selected( $o['language_mode'], $value, false ), esc_html( $label ) );
+	}
+	echo '</select><p class="description">' . esc_html__( 'The respondent name and retention sentence you customize are shown as typed in every language. Leave them at their defaults to have them translated.', 'wp-chat' ) . '</p></td></tr>';
 
 	// Where the chat is displayed
 	echo '<tr><th>' . esc_html__( 'Show the chat on', 'wp-chat' ) . '</th><td>';

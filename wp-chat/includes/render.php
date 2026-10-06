@@ -27,6 +27,15 @@ function wp_chat_should_display() {
 	return false;
 }
 
+/**
+ * The widget's texts in French and English (languages/widget-strings.json), so the widget can
+ * follow the visitor's browser language whatever the site language is.
+ */
+function wp_chat_widget_strings() {
+	$json = json_decode( (string) file_get_contents( WP_CHAT_DIR . 'languages/widget-strings.json' ), true );
+	return is_array( $json ) && isset( $json['en'], $json['fr'] ) ? $json : array( 'en' => array(), 'fr' => array() );
+}
+
 add_action( 'wp_enqueue_scripts', function () {
 	if ( ! wp_chat_should_display() ) {
 		return;
@@ -34,30 +43,27 @@ add_action( 'wp_enqueue_scripts', function () {
 	$o = wp_chat_get_options();
 	wp_enqueue_style( 'wp-chat', WP_CHAT_URL . 'assets/chat.css', array(), WP_CHAT_VERSION );
 	wp_enqueue_script( 'wp-chat', WP_CHAT_URL . 'assets/chat.js', array(), WP_CHAT_VERSION, true );
+	$strings = wp_chat_widget_strings();
+	// Texts the administrator changed from the defaults are shown as typed in every language
+	$custom = array();
+	$agent_defaults = array( $strings['en']['agentName'], $strings['fr']['agentName'], __( 'Respondent', 'wp-chat' ) );
+	if ( '' !== trim( (string) $o['agent_name'] ) && ! in_array( $o['agent_name'], $agent_defaults, true ) ) {
+		$custom['agentName'] = $o['agent_name'];
+	}
+	$retention_defaults = array( $strings['en']['retention'], $strings['fr']['retention'], wp_chat_defaults()['retention_text'] );
+	if ( '' !== trim( (string) $o['retention_text'] ) && ! in_array( $o['retention_text'], $retention_defaults, true ) ) {
+		$custom['retention'] = $o['retention_text'];
+	}
 	wp_localize_script( 'wp-chat', 'WPChatConfig', array(
-		'backend'     => $o['backend_url'],
-		'agentName'   => $o['agent_name'],
-		'color'       => $o['color'],
-		'privacyUrl'  => $o['privacy_url'],
-		'officer'     => $o['privacy_officer'],
-		'retention'   => $o['retention_text'],
-		'quickExit'   => $o['quick_exit_url'],
-		'i18n'        => array(
-			'open'      => __( 'Open chat', 'wp-chat' ),
-			'minimize'  => __( 'Minimize chat', 'wp-chat' ),
-			'title'     => __( 'Talk to someone', 'wp-chat' ),
-			'consent'   => __( 'This chat is confidential. We do not keep your messages on this website.', 'wp-chat' ),
-			'officer'   => __( 'Privacy contact:', 'wp-chat' ),
-			'policy'    => __( 'Privacy policy', 'wp-chat' ),
-			'start'     => __( 'I understand, start chatting', 'wp-chat' ),
-			'placeholder' => __( 'Type your message…', 'wp-chat' ),
-			'send'      => __( 'Send', 'wp-chat' ),
-			'end'       => __( 'End chat', 'wp-chat' ),
-			'exit'      => __( 'Quick exit', 'wp-chat' ),
-			'ended'     => __( 'The chat has ended and your conversation was deleted.', 'wp-chat' ),
-			'error'     => __( 'Connection problem. Please try again.', 'wp-chat' ),
-			'typing'    => __( 'is typing…', 'wp-chat' ),
-		),
+		'backend'    => $o['backend_url'],
+		'color'      => $o['color'],
+		'privacyUrl' => $o['privacy_url'],
+		'officer'    => $o['privacy_officer'],
+		'quickExit'  => $o['quick_exit_url'],
+		'langMode'   => $o['language_mode'],
+		'siteLang'   => ( 0 === strpos( determine_locale(), 'fr' ) ) ? 'fr' : 'en',
+		'strings'    => $strings,
+		'custom'     => (object) $custom,
 	) );
 } );
 

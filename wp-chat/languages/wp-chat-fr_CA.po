@@ -127,3 +127,21 @@ msgstr "Le serveur de clavardage a répondu, mais avec un statut inattendu :"
 
 msgid "Test the chat server"
 msgstr "Tester le serveur de clavardage"
+
+msgid "Widget language"
+msgstr "Langue du clavardage"
+
+msgid "Visitor’s browser language (French or English)"
+msgstr "Langue du navigateur du visiteur (français ou anglais)"
+
+msgid "Site language"
+msgstr "Langue du site"
+
+msgid "Always French"
+msgstr "Toujours en français"
+
+msgid "Always English"
+msgstr "Toujours en anglais"
+
+msgid "The respondent name and retention sentence you customize are shown as typed in every language. Leave them at their defaults to have them translated."
+msgstr "Le nom du répondant et la phrase sur la conservation que vous personnalisez sont affichés tels quels, dans toutes les langues. Laissez-les à leur valeur par défaut pour qu’ils soient traduits."

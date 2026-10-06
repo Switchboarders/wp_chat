@@ -1,0 +1,38 @@
+{
+	"en": {
+		"open": "Open chat",
+		"minimize": "Minimize chat",
+		"title": "Talk to someone",
+		"consent": "This chat is confidential. We do not keep your messages on this website.",
+		"officer": "Privacy contact:",
+		"policy": "Privacy policy",
+		"start": "I understand, start chatting",
+		"placeholder": "Type your message…",
+		"send": "Send",
+		"end": "End chat",
+		"exit": "Quick exit",
+		"ended": "The chat has ended and your conversation was deleted.",
+		"error": "Connection problem. Please try again.",
+		"typing": "is typing…",
+		"agentName": "Respondent",
+		"retention": "Your conversation is deleted when you end the chat or after 24 hours of inactivity."
+	},
+	"fr": {
+		"open": "Ouvrir le clavardage",
+		"minimize": "Réduire la fenêtre",
+		"title": "Parler à quelqu’un",
+		"consent": "Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur ce site Web.",
+		"officer": "Responsable de la vie privée :",
+		"policy": "Politique de confidentialité",
+		"start": "J’ai compris, commencer à clavarder",
+		"placeholder": "Écrivez votre message…",
+		"send": "Envoyer",
+		"end": "Terminer",
+		"exit": "Sortie rapide",
+		"ended": "Le clavardage est terminé et votre conversation a été supprimée.",
+		"error": "Problème de connexion. Veuillez réessayer.",
+		"typing": "écrit…",
+		"agentName": "Répondant",
+		"retention": "Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité."
+	}
+}
