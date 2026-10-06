@@ -1,3 +1,5 @@
+**English** · [Français](fr/README.md)
+
 # WP Chat documentation
 
 Start with [INSTALL.md](INSTALL.md). Then: [CONFIGURATION.md](CONFIGURATION.md) (all settings),

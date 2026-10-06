@@ -1,3 +1,5 @@
+**English** · [Français](fr/DEVELOPMENT.md)
+
 # Developing WP Chat
 
 ## Layout
@@ -13,7 +15,7 @@ wp-chat/                  the plugin (this folder is what gets installed)
   uninstall.php           removes the option
 dev/                      Docker WordPress test site (port 8085)
 tests/                    Node tests (no dependencies)
-docs/                     documentation
+docs/                     documentation (docs/fr/ for French)
 ```
 
 There is deliberately **no build step, Composer or npm dependency**: the plugin must install on any
@@ -53,10 +55,12 @@ language chosen for different browser language lists, site languages and forced 
 - Widget texts live in `languages/widget-strings.json` (same keys in `en` and `fr`).
 - Respondent text is inserted with `textContent`, never `innerHTML`.
 - The widget stores nothing in the browser (no `localStorage`/cookies of its own).
+- **Bilingual documentation:** every document in `docs/` and every root file has a French version in
+  `docs/fr/` (or `*.fr.md`) with the same outline. Change both together.
 
 ## Release
 
 1. Bump the version in `wp-chat/wp-chat.php` (header **and** `WP_CHAT_VERSION`) and `wp-chat/readme.txt`.
-2. Add an entry to `CHANGELOG.md`.
+2. Add an entry to `CHANGELOG.md` and `CHANGELOG.fr.md`.
 3. `zip -r wp-chat.zip wp-chat -x "*.DS_Store"`, install it on the test site, run the checks above.
 4. Commit and tag.

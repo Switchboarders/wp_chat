@@ -1,0 +1,78 @@
+[English](../HOW-IT-WORKS.md) · **Français**
+
+# Fonctionnement de WP Chat
+
+## Composants
+
+```
+ Navigateur du visiteur ──HTTPS──▶ proxy inverse ──▶ switchboard-chat ──▶ Serveur Matrix ◀── répondants
+        ▲                                                                                  (Element, …)
+        └── charge le module depuis WordPress (JS + CSS + réglages seulement)
+```
+
+| Élément | Rôle |
+|---|---|
+| **Module WP Chat** (ce projet) | Ajoute le module de clavardage à vos pages, stocke ses réglages, fournit l’écran d’administration et le texte de confidentialité suggéré. |
+| **Module de clavardage** (`wp-chat/assets/chat.js`, JavaScript simple) | S’exécute dans le navigateur du visiteur : bulle, fenêtre, avis de consentement, messages. Parle **directement** au serveur de clavardage. |
+| **Serveur de clavardage** (switchboard-chat) | Reçoit les messages des visiteurs, crée une salle Matrix chiffrée de bout en bout pour les répondants, leur renvoie les réponses. |
+| **Répondants** | Répondent depuis n’importe quel client Matrix. |
+
+WordPress ne se trouve **pas** dans le chemin des messages : il ne reçoit, ne relaie et ne stocke jamais un
+message.
+
+## Étape par étape
+
+1. Une page se charge. Si le clavardage doit y être affiché (réglages), le module ajoute le CSS/JS du
+   module de clavardage et un conteneur vide; le module démarre sous forme de petite bulle.
+2. Le visiteur clique sur la bulle : la fenêtre s’ouvre avec l’**avis de consentement** (ce qui est
+   conservé, pendant combien de temps, qui contacter). Rien n’est encore envoyé.
+3. Le visiteur appuie sur le bouton de départ : le module appelle le serveur de clavardage
+   (`POST /web/session`). Le serveur vérifie que l’origine de la page est autorisée, crée une session en
+   mémoire et dépose un seul témoin contenant un identifiant aléatoire (`HttpOnly; Secure; SameSite=None`).
+4. Le module ouvre une connexion en direct (`GET /web/stream`, évènements envoyés par le serveur) pour
+   recevoir les réponses.
+5. Le premier message fait créer au serveur la salle Matrix et inviter les répondants actifs. Chaque
+   message est un `POST /web/message`.
+6. La réponse d’un répondant est poussée par la connexion en direct et affichée dans la fenêtre.
+7. Le clavardage prend fin quand le visiteur appuie sur **Terminer** (`POST /web/end`), quand un
+   répondant écrit `!fin`, ou après le délai d’inactivité. La salle est quittée et oubliée, et la session
+   disparaît.
+
+L’API en détail se trouve dans le `docs/fr/web-chat.md` du serveur de clavardage.
+
+## Ce qui est stocké, et où
+
+| Donnée | Où | Conservée |
+|---|---|---|
+| Réglages du module | Base de données WordPress (`wp_options`, clé `wp_chat_options`) | jusqu’à la suppression du module |
+| Texte des messages | mémoire du navigateur (fenêtre ouverte) et mémoire du serveur de clavardage en transit; salle Matrix (chiffrée) pendant la durée du clavardage | disparaît au rechargement (navigateur); jamais écrit sur disque ni dans les journaux par le serveur; salle supprimée à la fin |
+| Identifiant du visiteur | témoin `wpchat` dans le navigateur; son empreinte dans la mémoire du serveur de clavardage | jusqu’à la fin du clavardage ou son expiration |
+| Adresse IP du visiteur | mémoire du serveur de clavardage, pour les limites de débit | une heure au plus |
+| Tout ce qui concerne le visiteur sur WordPress | **rien** | – |
+
+Le module n’utilise **aucun** `localStorage`, aucune analytique, aucun script ni police de tiers. Un
+rechargement de la page fait perdre la conversation affichée, par conception (le serveur ne conserve
+aucune transcription à restaurer).
+
+## Modèle de sécurité
+
+- **Liste d’origines autorisées :** le serveur ne répond qu’aux adresses de sites Web inscrites dans
+  `WEB_ALLOWED_ORIGINS` (CORS plus une vérification explicite de `Origin` à chaque appel), de sorte
+  qu’un autre site ne peut pas utiliser le témoin d’un visiteur.
+- **Témoin :** aléatoire, HTTP seulement (les scripts ne peuvent pas le lire), HTTPS seulement.
+- **Limites :** la taille et le débit des messages, les nouvelles sessions par IP et les clavardages
+  simultanés sont plafonnés par le serveur.
+- **Affichage :** le texte du répondant est affiché en texte brut (`textContent`), jamais en HTML.
+- **Confidentialité :** la salle Matrix est chiffrée de bout en bout; la liaison navigateur–serveur est en
+  HTTPS. L’apparence de « tête-à-tête » est voulue : le visiteur voit un seul nom de répondant générique.
+
+## Navigateurs pris en charge
+
+Tout navigateur récent offrant `fetch` et `EventSource` (Chrome, Edge, Firefox, Safari). Le témoin du
+clavardage ne doit pas être bloqué : il est de première partie quand le serveur de clavardage est un
+sous-domaine du domaine du site Web (recommandé), tiers autrement (voir TROUBLESHOOTING.md).
+
+## Documents connexes
+
+[INSTALL.md](INSTALL.md) · [CONFIGURATION.md](CONFIGURATION.md) · [TROUBLESHOOTING.md](TROUBLESHOOTING.md) ·
+[law25.md](law25.md)

@@ -1,3 +1,5 @@
+**English** · [Français](fr/TROUBLESHOOTING.md)
+
 # WP Chat troubleshooting
 
 Start at **Settings → WP Chat**. The coloured line at the top says whether the chat is displayed and

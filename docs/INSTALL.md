@@ -1,3 +1,5 @@
+**English** · [Français](fr/INSTALL.md)
+
 # Installing WP Chat
 
 WP Chat is a WordPress plugin that adds a chat bubble to your website. It needs a running

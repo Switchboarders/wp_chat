@@ -1,3 +1,5 @@
+**English** · [Français](fr/CONFIGURATION.md)
+
 # WP Chat configuration reference
 
 Everything is under **Settings → WP Chat**. The settings are stored in one WordPress option,

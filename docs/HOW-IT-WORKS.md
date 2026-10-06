@@ -1,3 +1,5 @@
+**English** · [Français](fr/HOW-IT-WORKS.md)
+
 # How WP Chat works
 
 ## Components

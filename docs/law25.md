@@ -1,3 +1,5 @@
+**English** · [Français](fr/law25.md)
+
 > Canonical copy: `docs/law25.md` in the switchboard-chat repository. Keep both in step.
 
 # Law 25 (Quebec) — privacy notes for wp-chat and switchboard-chat

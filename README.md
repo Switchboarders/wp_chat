@@ -1,3 +1,5 @@
+**English** · [Français](README.fr.md)
+
 # WP Chat
 
 A WordPress plugin that adds a **minimizable, one-on-one chat window** to your website. A visitor talks,

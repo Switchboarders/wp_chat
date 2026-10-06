@@ -1,3 +1,5 @@
+**English** · [Français](CHANGELOG.fr.md)
+
 # Changelog
 
 ## 0.4.0

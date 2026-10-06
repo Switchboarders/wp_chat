@@ -1,3 +1,5 @@
+**English** · [Français](README.fr.md)
+
 # Local WordPress tester
 
 ```
