@@ -31,8 +31,18 @@ function wp_chat_sanitize( $in ) {
 			$page_ids[] = $id;
 		}
 	}
+	// Do not drop a bad URL silently: the chat would just never appear
+	$backend = trim( (string) ( $in['backend_url'] ?? '' ) );
+	$backend_ok = esc_url_raw( untrailingslashit( $backend ), array( 'https' ) );
+	if ( '' !== $backend && '' === $backend_ok && function_exists( 'add_settings_error' ) ) {
+		add_settings_error(
+			'wp_chat_options',
+			'wp_chat_backend_url',
+			__( 'The Backend URL must start with https:// (for example https://chat.example.org). It was not saved, so the chat stays hidden.', 'wp-chat' )
+		);
+	}
 	return array(
-		'backend_url'     => esc_url_raw( untrailingslashit( $in['backend_url'] ?? '' ), array( 'https' ) ),
+		'backend_url'     => $backend_ok,
 		'agent_name'      => sanitize_text_field( $in['agent_name'] ?? $d['agent_name'] ),
 		'color'           => sanitize_hex_color( $in['color'] ?? '' ) ?: $d['color'],
 		'privacy_url'     => esc_url_raw( $in['privacy_url'] ?? '' ),
@@ -53,6 +63,42 @@ add_action( 'admin_menu', function () {
 	add_options_page( 'WP Chat', 'WP Chat', 'manage_options', 'wp-chat', 'wp_chat_settings_page' );
 } );
 
+/**
+ * Says in plain words whether the chat is displayed, and why not, with a button that checks
+ * the backend from the admin's browser (the same way a visitor's browser will reach it).
+ */
+function wp_chat_status_notice( $o ) {
+	if ( empty( $o['backend_url'] ) ) {
+		$class = 'notice-error';
+		$text  = __( 'The chat is NOT displayed: the Backend URL is empty. Enter the https:// address of your chat server below and save.', 'wp-chat' );
+	} elseif ( 'selected' === $o['display_mode'] && empty( $o['page_ids'] ) && empty( $o['include_posts'] ) ) {
+		$class = 'notice-warning';
+		$text  = __( 'The chat is NOT displayed: "Only the selected pages" is chosen but no page is ticked.', 'wp-chat' );
+	} elseif ( 'selected' === $o['display_mode'] ) {
+		$class = 'notice-success';
+		/* translators: %d: number of pages */
+		$text = sprintf( __( 'The chat is displayed on %d selected page(s).', 'wp-chat' ), count( (array) $o['page_ids'] ) );
+	} else {
+		$class = 'notice-success';
+		$text  = __( 'The chat is displayed on all pages.', 'wp-chat' );
+	}
+	printf( '<div class="notice %s"><p>%s</p></div>', esc_attr( $class ), esc_html( $text ) );
+	if ( empty( $o['backend_url'] ) ) {
+		return;
+	}
+	$msgs = array(
+		'testing' => __( 'Testing…', 'wp-chat' ),
+		'ok'      => __( 'The chat server answers and accepts this website.', 'wp-chat' ),
+		'fail'    => __( 'Cannot reach the chat server from this browser. Check the address (https, no typo), that the server is running, and that this website\'s address is listed in WEB_ALLOWED_ORIGINS on the server.', 'wp-chat' ),
+		'other'   => __( 'The chat server answered, but with an unexpected status:', 'wp-chat' ),
+	);
+	echo '<p><button type="button" class="button" id="wp-chat-test">' . esc_html__( 'Test the chat server', 'wp-chat' ) . '</button> <span id="wp-chat-test-result"></span></p>';
+	echo '<script>(function(){var b=document.getElementById("wp-chat-test"),o=document.getElementById("wp-chat-test-result"),m=' . wp_json_encode( $msgs ) . ',u=' . wp_json_encode( $o['backend_url'] ) . ';'
+		. 'b.addEventListener("click",function(){o.textContent=m.testing;'
+		// /web/stream without a session answers 401 {"error":"no_session"}: proves the server is reachable and CORS lets this site in
+		. 'fetch(u+"/web/stream",{credentials:"include"}).then(function(r){o.textContent=(r.status===401)?m.ok:m.other+" "+r.status;}).catch(function(){o.textContent=m.fail;});});})();</script>';
+}
+
 function wp_chat_settings_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
@@ -67,7 +113,10 @@ function wp_chat_settings_page() {
 		'retention_text'  => array( __( 'Retention sentence shown before chatting', 'wp-chat' ), 'text' ),
 		'quick_exit_url'  => array( __( 'Quick exit URL', 'wp-chat' ), 'url' ),
 	);
-	echo '<div class="wrap"><h1>WP Chat</h1><form method="post" action="options.php">';
+	echo '<div class="wrap"><h1>WP Chat</h1>';
+	settings_errors( 'wp_chat_options' );
+	wp_chat_status_notice( $o );
+	echo '<form method="post" action="options.php">';
 	settings_fields( 'wp_chat' );
 	echo '<table class="form-table">';
 	foreach ( $fields as $key => $f ) {

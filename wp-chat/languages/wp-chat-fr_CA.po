@@ -96,3 +96,34 @@ msgstr "Afficher aussi sur les articles de blogue et la page d’accueil des der
 
 msgid "The chat is hidden everywhere else, including search results and archives."
 msgstr "Le clavardage est masqué partout ailleurs, y compris dans les résultats de recherche et les archives."
+
+msgid "The Backend URL must start with https:// (for example https://chat.example.org). It was not saved, so the chat stays hidden."
+msgstr "L’URL du serveur doit commencer par https:// (par exemple https://clavardage.exemple.org). Elle n’a pas été enregistrée : le clavardage reste donc masqué."
+
+msgid "The chat is NOT displayed: the Backend URL is empty. Enter the https:// address of your chat server below and save."
+msgstr "Le clavardage n’est PAS affiché : l’URL du serveur est vide. Entrez ci-dessous l’adresse https:// de votre serveur de clavardage, puis enregistrez."
+
+msgid "The chat is NOT displayed: \"Only the selected pages\" is chosen but no page is ticked."
+msgstr "Le clavardage n’est PAS affiché : « Seulement les pages sélectionnées » est choisi, mais aucune page n’est cochée."
+
+#. translators: %d: number of pages
+msgid "The chat is displayed on %d selected page(s)."
+msgstr "Le clavardage est affiché sur %d page(s) sélectionnée(s)."
+
+msgid "The chat is displayed on all pages."
+msgstr "Le clavardage est affiché sur toutes les pages."
+
+msgid "Testing…"
+msgstr "Test en cours…"
+
+msgid "The chat server answers and accepts this website."
+msgstr "Le serveur de clavardage répond et accepte ce site Web."
+
+msgid "Cannot reach the chat server from this browser. Check the address (https, no typo), that the server is running, and that this website's address is listed in WEB_ALLOWED_ORIGINS on the server."
+msgstr "Impossible de joindre le serveur de clavardage depuis ce navigateur. Vérifiez l’adresse (https, sans faute), que le serveur fonctionne et que l’adresse de ce site Web figure dans WEB_ALLOWED_ORIGINS sur le serveur."
+
+msgid "The chat server answered, but with an unexpected status:"
+msgstr "Le serveur de clavardage a répondu, mais avec un statut inattendu :"
+
+msgid "Test the chat server"
+msgstr "Tester le serveur de clavardage"
