@@ -36,8 +36,8 @@ message.
    message est un `POST /web/message`.
 6. La réponse d’un répondant est poussée par la connexion en direct et affichée dans la fenêtre.
 7. Le clavardage prend fin quand le visiteur appuie sur **Terminer** (`POST /web/end`) ou ferme la page,
-   quand un répondant écrit `!fin`, après le délai d’inactivité, ou quand la connexion du visiteur reste
-   fermée quelques minutes. La salle est quittée et oubliée, et la session disparaît.
+   quand un répondant écrit `!fin`, après le délai d’inactivité, quand la connexion du visiteur reste
+   fermée quelques minutes, ou quand rien n’est écrit pendant 10 minutes. La salle est quittée et oubliée, et la session disparaît.
 
 L’API en détail se trouve dans le `docs/fr/web-chat.md` du serveur de clavardage.
 
