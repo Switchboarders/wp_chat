@@ -12,6 +12,7 @@ function wp_chat_defaults() {
 		'privacy_officer' => '',
 		'retention_text' => __( 'Your conversation is deleted when you end the chat or after 24 hours of inactivity.', 'wp-chat' ),
 		'language_mode' => 'auto', // 'auto' (visitor's browser), 'site', 'fr' or 'en'
+		'unavailable_text' => '',
 		'display_mode'  => 'all', // 'all' or 'selected'
 		'page_ids'      => array(),
 		'include_posts' => 0,
@@ -48,6 +49,7 @@ function wp_chat_sanitize( $in ) {
 		'privacy_url'     => esc_url_raw( $in['privacy_url'] ?? '' ),
 		'privacy_officer' => sanitize_text_field( $in['privacy_officer'] ?? '' ),
 		'retention_text'  => sanitize_text_field( $in['retention_text'] ?? $d['retention_text'] ),
+		'unavailable_text' => mb_substr( sanitize_text_field( $in['unavailable_text'] ?? '' ), 0, 300 ),
 		'language_mode'   => in_array( $in['language_mode'] ?? '', array( 'auto', 'site', 'fr', 'en' ), true ) ? $in['language_mode'] : 'auto',
 		'display_mode'    => ( 'selected' === ( $in['display_mode'] ?? '' ) ) ? 'selected' : 'all',
 		'page_ids'        => array_values( array_unique( $page_ids ) ),
@@ -120,6 +122,7 @@ function wp_chat_settings_page() {
 		'privacy_url'     => array( __( 'Privacy policy URL', 'wp-chat' ), 'url' ),
 		'privacy_officer' => array( __( 'Person responsible for privacy (Law 25)', 'wp-chat' ), 'text' ),
 		'retention_text'  => array( __( 'Retention sentence shown before chatting', 'wp-chat' ), 'text' ),
+		'unavailable_text' => array( __( 'Extra text when the chat is unavailable (for example another number to call)', 'wp-chat' ), 'text' ),
 	);
 	echo '<div class="wrap"><h1>WP Chat</h1>';
 	settings_errors( 'wp_chat_options' );

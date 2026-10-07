@@ -2,6 +2,14 @@
 
 # Historique des versions
 
+## 0.6.0
+- Messages clairs pour un visiteur qui ne peut pas être servi : connexion bloquée (`!bloquer` par un répondant),
+  personne de disponible, clavardage occupé ou trop de tentatives.
+- Nouveau réglage *Texte additionnel quand le clavardage est indisponible* (par exemple un autre numéro à
+  appeler), affiché avec ces messages.
+- Fonctionne avec la protection contre les abus de switchboard-chat (`!bloquer`, `WEB_SESSIONS_PER_IP_PER_HOUR`,
+  `web_unban`).
+
 ## 0.5.0
 - **Plus de témoin.** Le module garde un jeton de session dans sa propre mémoire et l’envoie dans un en-tête
   `Authorization`; le flux en direct utilise la diffusion `fetch` au lieu d’`EventSource`. Le clavardage

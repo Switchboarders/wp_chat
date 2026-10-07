@@ -16,6 +16,7 @@ and why not, and **Test the chat server** checks the connection from your browse
 | Privacy policy URL | `privacy_url` | empty | Link shown in the consent notice. |
 | Person responsible for privacy | `privacy_officer` | empty | Name shown in the consent notice ("Privacy contact: …"). |
 | Retention sentence | `retention_text` | "Your conversation is deleted when you end the chat or after 24 hours of inactivity." | Shown before the visitor starts. **Keep it equal to the server's `WEB_IDLE_TIMEOUT_MIN`.** |
+| Extra text when the chat is unavailable | `unavailable_text` | empty | Up to 300 characters shown under the message when a visitor cannot be served (blocked connection, nobody available, server busy): put another way to get help, for example a phone number. |
 | Widget language | `language_mode` | `auto` | See "Language". |
 | Show the chat on | `display_mode`, `page_ids`, `include_posts` | all pages | See "Where the chat appears". |
 

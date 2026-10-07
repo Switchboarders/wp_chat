@@ -139,3 +139,6 @@ msgstr "Toujours en anglais"
 
 msgid "The respondent name and retention sentence you customize are shown as typed in every language. Leave them at their defaults to have them translated."
 msgstr "Le nom du répondant et la phrase sur la conservation que vous personnalisez sont affichés tels quels, dans toutes les langues. Laissez-les à leur valeur par défaut pour qu’ils soient traduits."
+
+msgid "Extra text when the chat is unavailable (for example another number to call)"
+msgstr "Texte additionnel quand le clavardage est indisponible (par exemple un autre numéro à appeler)"

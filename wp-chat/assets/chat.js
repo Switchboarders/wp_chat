@@ -81,7 +81,15 @@
 			headers: headers,
 			body: JSON.stringify(body || {})
 		}).then(function (r) {
-			if (!r.ok) { throw new Error(r.status); }
+			if (!r.ok) {
+				// Keep the server's error code ("blocked", "no_respondent", "busy", "rate_limited", …)
+				return r.json().catch(function () { return {}; }).then(function (b) {
+					var err = new Error(String(r.status));
+					err.status = r.status;
+					err.code = b && b.error;
+					throw err;
+				});
+			}
 			return r.json().catch(function () { return {}; });
 		});
 	}
@@ -135,6 +143,21 @@
 		log.scrollTop = log.scrollHeight;
 	}
 	function notice(text) { log.appendChild(el('div', 'wpc-notice', text)); log.scrollTop = log.scrollHeight; }
+
+	// Says what is wrong in words the visitor can act on; for "can't be served" cases it adds the
+	// administrator's own text (for example another number to call).
+	function showProblem(e) {
+		var code = e && e.code;
+		var text = code === 'blocked' ? t.blocked
+			: code === 'no_respondent' ? t.unavailable
+			: code === 'busy' ? t.busy
+			: code === 'rate_limited' ? t.rate
+			: t.error;
+		notice(text);
+		if (cfg.unavailableText && (code === 'blocked' || code === 'no_respondent' || code === 'busy')) {
+			notice(cfg.unavailableText);
+		}
+	}
 
 	function toggle(open) {
 		win.hidden = !open;
@@ -226,9 +249,9 @@
 			consent.hidden = true; log.hidden = false; form.hidden = false; btnEnd.hidden = false;
 			openStream();
 			input.focus();
-		}).catch(function () {
+		}).catch(function (e) {
 			btnStart.disabled = false;
-			notice(t.error);
+			showProblem(e);
 			log.hidden = false;
 		});
 	});
@@ -241,7 +264,7 @@
 		addMsg(text, true);
 		api('/web/message', { text: text }).catch(function (e) {
 			// 401: the chat ended or expired (or the page came back from the browser's back/forward cache)
-			if (String(e && e.message) === '401') { finish(); } else { notice(t.error); }
+			if (String(e && e.message) === '401') { finish(); } else { showProblem(e); }
 		});
 	});
 

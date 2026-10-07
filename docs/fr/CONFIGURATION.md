@@ -16,6 +16,7 @@ pourquoi; **Tester le serveur de clavardage** vérifie la connexion depuis votre
 | URL de la politique de confidentialité | `privacy_url` | vide | Lien affiché dans l’avis de consentement. |
 | Personne responsable de la protection des renseignements personnels | `privacy_officer` | vide | Nom affiché dans l’avis de consentement (« Responsable de la vie privée : … »). |
 | Phrase sur la conservation | `retention_text` | « Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité. » | Affichée avant que le visiteur commence. **Gardez-la conforme au `WEB_IDLE_TIMEOUT_MIN` du serveur.** |
+| Texte additionnel quand le clavardage est indisponible | `unavailable_text` | vide | Jusqu’à 300 caractères affichés sous le message quand un visiteur ne peut pas être servi (connexion bloquée, personne de disponible, serveur occupé) : indiquez un autre moyen d’obtenir de l’aide, par exemple un numéro de téléphone. |
 | Langue du clavardage | `language_mode` | `auto` | Voir « Langue ». |
 | Afficher le clavardage sur | `display_mode`, `page_ids`, `include_posts` | toutes les pages | Voir « Où le clavardage apparaît ». |
 

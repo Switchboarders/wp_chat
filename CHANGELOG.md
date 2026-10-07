@@ -2,6 +2,13 @@
 
 # Changelog
 
+## 0.6.0
+- Clear messages for a visitor who cannot be served: blocked connection (`!ban` by a respondent), nobody
+  available, chat busy, or too many attempts.
+- New setting *Extra text when the chat is unavailable* (for example another number to call), shown with those
+  messages.
+- Works with switchboard-chat's abuse protection (`!ban`, `WEB_SESSIONS_PER_IP_PER_HOUR`, `web_unban`).
+
 ## 0.5.0
 - **No more cookie.** The widget keeps a session token in its own memory and sends it in an `Authorization`
   header; the live stream uses `fetch` streaming instead of `EventSource`. The chat now works in browsers that

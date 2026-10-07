@@ -14,10 +14,10 @@ class El {
   focus() {}
 }
 
-function startWidget(base) {
+function startWidget(base, extraCfg) {
   const made = [], root = new El('div'), winListeners = {}, beacons = [], esCreated = [];
   const document = { getElementById: () => root, createElement: t => { const e = new El(t); made.push(e); return e; } };
-  const window = { WPChatConfig: { backend: base, color: '#000', privacyUrl: '', officer: '', langMode: 'en', siteLang: 'en', strings, custom: {} },
+  const window = { WPChatConfig: { backend: base, color: '#000', privacyUrl: '', officer: '', langMode: 'en', siteLang: 'en', strings, custom: {}, ...(extraCfg || {}) },
     navigator: { language: 'en', sendBeacon: (url, blob) => { beacons.push({ url, blob }); return true; } },
     addEventListener: (t, fn) => { winListeners[t] = fn; } };
   function EventSource(url, opts) { esCreated.push({ url, opts }); this.addEventListener = () => {}; this.close = () => {}; }
@@ -102,6 +102,22 @@ async function beaconOnPageHide() {
   server.close(); // the open stream is dropped with the process
 }
 
+async function refusedVisitors() {
+  for (const [code, status, expectKey, withExtra] of [['blocked', 403, 'blocked', true], ['no_respondent', 503, 'unavailable', true], ['busy', 503, 'busy', true], ['rate_limited', 429, 'rate', false]]) {
+    const server = http.createServer((req, res) => {
+      req.on('data', () => {}); req.on('end', () => { res.statusCode = status; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify({ error: code })); });
+    });
+    await new Promise(r => server.listen(0, '127.0.0.1', r));
+    const w = startWidget('http://127.0.0.1:' + server.address().port, { unavailableText: 'Call 555-0100.' });
+    w.byClass('wpc-start').fire('click');
+    await until(() => w.texts().some(t => t.includes(strings.en[expectKey])), 'message for ' + code);
+    const extra = w.texts().some(t => t.includes('Call 555-0100.'));
+    check(extra === withExtra, code + ': shows "' + strings.en[expectKey].slice(0, 30) + '…"' + (withExtra ? ' plus the administrator\'s contact text' : ' without the contact text'));
+    check(w.byClass('wpc-form').hidden === true, code + ': no chat is started');
+    server.close();
+  }
+}
+
 async function legacyCookieServer() {
   const server = http.createServer((req, res) => {
     req.on('data', () => {}); req.on('end', () => { res.setHeader('content-type', 'application/json'); res.end('{"resumed":false}'); });
@@ -115,7 +131,7 @@ async function legacyCookieServer() {
 }
 
 (async () => {
-  try { await tokenMode(); await beaconOnPageHide(); await legacyCookieServer(); }
+  try { await tokenMode(); await beaconOnPageHide(); await refusedVisitors(); await legacyCookieServer(); }
   catch (e) { failures++; console.log('FAIL', e.message); }
   console.log(failures ? failures + ' failure(s)' : 'all passed');
   process.exit(failures ? 1 : 0);
