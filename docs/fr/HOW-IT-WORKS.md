@@ -49,7 +49,7 @@ L’API en détail se trouve dans le `docs/fr/web-chat.md` du serveur de clavard
 | Texte des messages | mémoire du navigateur (fenêtre ouverte) et mémoire du serveur de clavardage en transit; salle Matrix (chiffrée) pendant la durée du clavardage | disparaît au rechargement (navigateur); jamais écrit sur disque ni dans les journaux par le serveur; salle supprimée à la fin |
 | Identifiant du visiteur | jeton de session dans la mémoire du module (aucun témoin, aucun stockage du navigateur); son empreinte dans la mémoire du serveur de clavardage | jusqu’à la fin du clavardage, la fermeture de la page ou son expiration |
 | Adresse IP du visiteur | mémoire du serveur de clavardage, pour les limites de débit | une heure au plus |
-| Liste de blocage (seulement après un `!bloquer` d’un répondant) | base de données du serveur de clavardage : empreinte à clé de l’adresse IPv4 ou du réseau IPv6 /64, et une date de fin | jusqu’à l’expiration du blocage (24 h par défaut); aucun motif, aucun contenu, aucune adresse lisible |
+| Liste de blocage (seulement après un `!bloquer` d’un répondant) | base de données du serveur de clavardage : empreinte à clé de l’adresse IPv4 ou du réseau IPv6 /64, et une date de fin | jusqu’à l’expiration du blocage (1 jour par défaut); aucun motif, aucun contenu, aucune adresse lisible |
 | Tout ce qui concerne le visiteur sur WordPress | **rien** | – |
 
 Le module n’utilise **aucun** `localStorage`, aucune analytique, aucun script ni police de tiers. Un

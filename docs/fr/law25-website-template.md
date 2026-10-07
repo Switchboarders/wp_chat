@@ -47,7 +47,7 @@ textes destinés aux visiteurs en français. Si votre site est bilingue, publiez
 | Copies gardées par les bénévoles | Les clients Matrix des bénévoles conservent leur propre copie jusqu’à ce qu’ils suppriment la salle (on le leur demande). | engagement des bénévoles (partie E); politique de conservation facultative du serveur Matrix |
 | Redémarrage du serveur de clavardage | Met fin à tous les clavardages ouverts (les sessions sont en mémoire). | – |
 | Profilage / pistage | Aucun : pas d’analytique, de publicité ni de script tiers dans le module; aucune technologie pour identifier, localiser ou profiler le visiteur. | – (les **autres** outils d’analyse de votre site sont distincts : décrivez-les dans votre politique générale) |
-| Blocage des visiteurs abusifs | Un répondant peut écrire `!bloquer` : le clavardage prend fin et la connexion du visiteur est refusée pendant une durée fixée (24 h par défaut). Le serveur conserve alors une **empreinte à clé** de l’adresse IPv4 ou du réseau IPv6 /64 et une date de fin (aucun motif, aucun contenu), et la supprime à l’expiration. Dites-le dans la politique. | `WEB_BAN_HOURS`, `WEB_BAN_MAX_HOURS` |
+| Blocage des visiteurs abusifs | Un répondant peut écrire `!bloquer` : le clavardage prend fin et la connexion du visiteur est refusée pendant une durée fixée (1 jour par défaut). Le serveur conserve alors une **empreinte à clé** de l’adresse IPv4 ou du réseau IPv6 /64 et une date de fin (aucun motif, aucun contenu), et la supprime à l’expiration. Dites-le dans la politique. | `WEB_BAN_DAYS`, `WEB_BAN_MAX_DAYS` |
 | Si vous exploitez aussi la ligne SMS | Le numéro de téléphone de l’appelant est stocké chiffré et haché; les conversations sont supprimées après *N* jours de silence; les SMS transitent par voip.ms et les fournisseurs de services mobiles. | `SMS_IDLE_RETENTION_DAYS` (7 par défaut) |
 | Journaux de la passerelle | 7 fichiers quotidiens, sans texte de message, sans numéro de téléphone, sans jeton ni mot de passe. | – |
 | Où se trouvent les données | là où **vous** hébergez WordPress, le serveur de clavardage, le serveur Matrix et le proxy | vos choix d’hébergement |
@@ -90,7 +90,7 @@ s’appliquent pas, ainsi que le bloc SMS si vous n’offrez pas les SMS.*
 > - Votre adresse IP, gardée brièvement dans la mémoire de notre serveur de clavardage pour limiter les
 >   abus, et consignée dans les journaux techniques de nos serveurs pendant `[X jours]`. Si un bénévole
 >   bloque une connexion pour cause d’abus, nous conservons aussi une empreinte illisible de cette adresse
->   (elle ne permet pas de retrouver l’adresse) jusqu’à la fin du blocage, `[24 heures]` par défaut et jamais
+>   (elle ne permet pas de retrouver l’adresse) jusqu’à la fin du blocage, `[1 jour]` par défaut et jamais
 >   plus de `[30 jours]`.
 >
 > Nous ne vous demandons **pas** votre nom, votre adresse courriel ni votre numéro de téléphone, et nous n’en
@@ -263,7 +263,7 @@ Québec *(à vérifier)*. Pré-remplie avec les faits de WP Chat; complétez les
 | 3. Nécessité et proportionnalité | Le contenu des messages est nécessaire pour tenir la conversation. L’identifiant est nécessaire pour la poursuivre. L’adresse IP est nécessaire pour limiter les abus. Rien d’autre n’est recueilli. `[Justifiez et envisagez des solutions de rechange, p. ex. une ligne téléphonique.]` |
 | 4. Parties et flux | Visiteur ↔ serveur de clavardage (HTTPS) ↔ salle Matrix chiffrée ↔ bénévoles. WordPress n’est pas dans le chemin. Fournisseurs : `[ENTREPRISES D’HÉBERGEMENT]`, `[EXPLOITANT MATRIX]`, `[FOURNISSEUR SMS]`. |
 | 5. Lieux et transferts | `[OÙ SE TROUVE CHAQUE SERVEUR; transferts hors Québec et évaluation de la protection]` |
-| 6. Conservation et destruction | Web : à la fin du clavardage ou après `[24 h]`; les bénévoles suppriment leurs copies; journaux du proxy `[X jours]`; liste de blocage `[24 h, 30 jours au plus]`. SMS : après `[7 jours]` de silence; empreinte de désabonnement conservée; sauvegardes `[COMBIEN DE TEMPS, CHIFFRÉES]`. |
+| 6. Conservation et destruction | Web : à la fin du clavardage ou après `[24 h]`; les bénévoles suppriment leurs copies; journaux du proxy `[X jours]`; liste de blocage `[1 jour, 30 jours au plus]`. SMS : après `[7 jours]` de silence; empreinte de désabonnement conservée; sauvegardes `[COMBIEN DE TEMPS, CHIFFRÉES]`. |
 | 7. Mesures de protection | HTTPS; salles chiffrées de bout en bout; texte des messages jamais sur disque ni dans les journaux; liste d’origines autorisées; limites de débit; numéros hachés/chiffrés; secrets dans l’environnement; engagement des bénévoles; procédure d’incident. |
 | 8. Risques et mesures d’atténuation | Voir le tableau ci-dessous. |
 | 9. Risques résiduels | Les appareils des bénévoles gardent des copies jusqu’à leur suppression; les fournisseurs de services mobiles conservent des enregistrements; l’appareil et le réseau du visiteur; `[AUTRES]`. |

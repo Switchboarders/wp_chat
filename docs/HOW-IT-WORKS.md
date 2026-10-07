@@ -46,7 +46,7 @@ The API in detail is in the chat server's `docs/web-chat.md`.
 | Message text | browser memory (the open window) and the chat server's memory in transit; Matrix room (encrypted) while the chat lasts | gone on reload (browser); never written to disk or logs by the server; room deleted at the end |
 | Visitor identifier | session token in the widget's memory (no cookie, no browser storage); its hash in the chat server's memory | until the chat ends, the page is closed, or it times out |
 | Visitor IP address | chat server memory, for rate limiting | at most one hour |
-| Block list (only after a respondent uses `!ban`) | chat server database: keyed hash of the IPv4 address or IPv6 /64 network, and an end date | until the block expires (default 24 h); no reason, no content, no readable address |
+| Block list (only after a respondent uses `!ban`) | chat server database: keyed hash of the IPv4 address or IPv6 /64 network, and an end date | until the block expires (default 1 day); no reason, no content, no readable address |
 | Anything about the visitor on WordPress | **nothing** | – |
 
 The widget uses **no** `localStorage`, no analytics, no third-party scripts or fonts. A page reload

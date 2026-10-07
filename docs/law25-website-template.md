@@ -44,7 +44,7 @@ French. If your site is bilingual, publish both.
 | Copies kept by volunteers | Volunteers' Matrix clients keep their own copy until they delete the room (they are asked to). | volunteer commitment (Part E); optional Matrix server retention policy |
 | Restart of the chat server | Ends all open chats (sessions are in memory). | – |
 | Profiling / tracking | None: no analytics, advertising, or third-party scripts in the widget; no technology to identify, locate or profile the visitor. | – (your **site's other** analytics are separate: describe them in your general policy) |
-| Blocking abusive visitors | A respondent can type `!ban`: the chat ends and the visitor's connection is refused for a set time (default 24 h). The server then keeps a **keyed hash** of the IPv4 address or IPv6 /64 network and an end date (no reason, no content), and deletes it at expiry. Say so in the policy. | `WEB_BAN_HOURS`, `WEB_BAN_MAX_HOURS` |
+| Blocking abusive visitors | A respondent can type `!ban`: the chat ends and the visitor's connection is refused for a set time (default 1 day). The server then keeps a **keyed hash** of the IPv4 address or IPv6 /64 network and an end date (no reason, no content), and deletes it at expiry. Say so in the policy. | `WEB_BAN_DAYS`, `WEB_BAN_MAX_DAYS` |
 | If you also run the SMS line | The caller's phone number is stored encrypted and hashed; conversations are deleted after *N* days of silence; SMS pass through voip.ms and mobile carriers. | `SMS_IDLE_RETENTION_DAYS` (default 7) |
 | Server logs of the bridge | 7 daily files, no message text, no phone number, no token or password. | – |
 | Where data lives | wherever **you** host WordPress, the chat server, the Matrix server and the proxy | your hosting choices |
@@ -86,7 +86,7 @@ SMS block if you do not offer SMS.*
 > - Your IP address, held briefly in the memory of our chat server to limit abuse, and recorded in the
 >   technical logs of our servers for `[X days]`. If a volunteer blocks a connection for abuse, we also keep
 >   an unreadable fingerprint of that address (it cannot be turned back into the address) until the block
->   ends, `[24 hours]` by default and never more than `[30 days]`.
+>   ends, `[1 day]` by default and never more than `[30 days]`.
 >
 > We do **not** ask for your name, email address or phone number, and we do not need them to chat.
 > The chat does not use analytics, advertising or profiling tools, and does not use any technology to
@@ -247,7 +247,7 @@ Pre-filled with the facts of WP Chat; complete the bracketed parts.
 | 3. Necessity and proportionality | Message content is necessary to hold the conversation. The identifier is needed to keep the conversation going. The IP address is needed to limit abuse. Nothing else is collected. `[Justify and consider alternatives, e.g. a telephone line.]` |
 | 4. Parties and flows | Visitor ↔ chat server (HTTPS) ↔ encrypted Matrix room ↔ volunteers. WordPress is not in the path. Providers: `[HOSTING COMPANIES]`, `[MATRIX OPERATOR]`, `[SMS PROVIDER]`. |
 | 5. Location and transfers | `[WHERE EACH SERVER IS; transfers outside Quebec and the protection assessment]` |
-| 6. Retention and destruction | Web: at end of chat or after `[24 h]`; volunteers delete their copies; proxy logs `[X days]`; block list `[24 h, 30 days at most]`. SMS: after `[7 days]` of silence; opt-out fingerprint kept; backups `[HOW LONG, ENCRYPTED]`. |
+| 6. Retention and destruction | Web: at end of chat or after `[24 h]`; volunteers delete their copies; proxy logs `[X days]`; block list `[1 day, 30 days at most]`. SMS: after `[7 days]` of silence; opt-out fingerprint kept; backups `[HOW LONG, ENCRYPTED]`. |
 | 7. Safeguards | HTTPS; end-to-end encrypted rooms; message text never on disk or in logs; origin allow-list; rate limits; numbers hashed/encrypted; secrets in environment; volunteers' commitment; incident procedure. |
 | 8. Risks and mitigations | See table below. |
 | 9. Residual risks | Volunteers' devices keep copies until deleted; SMS carriers keep records; the visitor's own device and network; `[OTHERS]`. |
