@@ -41,6 +41,7 @@ Tout réinitialiser : `docker compose down -v`.
 ```bash
 node tests/widget-language.test.js       # choix de la langue par le vrai code du module, face à une page simulée
 node tests/sse-parser.test.js            # l’analyseur de text/event-stream (blocs découpés n’importe où)
+node tests/pow.test.js                   # le SHA-256 du module et son solveur d’épreuve de calcul face au crypto de Node
 node tests/widget-flow.test.js           # vraie diffusion fetch face à un faux serveur de clavardage : en-tête du jeton, reconnexion, 401, avis de fermeture, repli vers un ancien serveur
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
@@ -57,7 +58,8 @@ langue choisie pour différentes listes de langues du navigateur, langues du sit
   en-tête `Language:`).
 - Les textes du module vivent dans `languages/widget-strings.json` (mêmes clés dans `en` et `fr`).
 - Le texte des répondants s’insère avec `textContent`, jamais avec `innerHTML`.
-- Le module ne stocke rien dans le navigateur (ni `localStorage`, ni témoin qui lui soit propre).
+- Le module ne stocke rien dans le navigateur, sauf une exception : le marqueur signé « bloqué jusqu’à »
+  (clé `wpchat_blocked` du `localStorage`), écrit seulement pour un visiteur qu’un répondant a bloqué. Gardez-le ainsi.
 - **Documentation bilingue :** chaque document de `docs/` et chaque fichier racine a une version française
   dans `docs/fr/` (ou `*.fr.md`) avec le même plan. Modifiez les deux ensemble.
 

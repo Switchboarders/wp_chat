@@ -84,7 +84,7 @@ wp option update wp_chat_options '{"backend_url":"https://chat.example.org","pri
    clavardage est terminé.
 5. Dans les outils de développement du navigateur (onglet Réseau), les requêtes vers le serveur de
    clavardage portent un en-tête `Authorization: Bearer …`. Il n’y a **aucun témoin** ni rien dans le
-   stockage du navigateur (onglet Application), et WordPress ne détient rien sur le visiteur.
+   stockage du navigateur (onglet Application) sauf si le visiteur a été bloqué, et WordPress ne détient rien sur le visiteur.
 
 ## 5. Texte de confidentialité
 

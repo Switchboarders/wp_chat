@@ -48,6 +48,7 @@ textes destinés aux visiteurs en français. Si votre site est bilingue, publiez
 | Redémarrage du serveur de clavardage | Met fin à tous les clavardages ouverts (les sessions sont en mémoire). | – |
 | Profilage / pistage | Aucun : pas d’analytique, de publicité ni de script tiers dans le module; aucune technologie pour identifier, localiser ou profiler le visiteur. | – (les **autres** outils d’analyse de votre site sont distincts : décrivez-les dans votre politique générale) |
 | Blocage des visiteurs abusifs | Un répondant peut écrire `!bloquer` : le clavardage prend fin et la connexion du visiteur est refusée pendant une durée fixée (1 jour par défaut). Le serveur conserve alors une **empreinte à clé** de l’adresse IPv4 ou du réseau IPv6 /64 et une date de fin (aucun motif, aucun contenu), et la supprime à l’expiration. Dites-le dans la politique. | `WEB_BAN_DAYS`, `WEB_BAN_MAX_DAYS` |
+| Marqueur de blocage dans le navigateur | Seulement pour un visiteur qu’un répondant a bloqué : le module enregistre un marqueur signé « bloqué jusqu’à » dans le `localStorage` du navigateur (deux dates et une signature, aucun identifiant) pour que changer de réseau n’aide pas. Rien n’est stocké pour les autres. Dites-le dans la politique. | prend fin avec le blocage |
 | Si vous exploitez aussi la ligne SMS | Le numéro de téléphone de l’appelant est stocké chiffré et haché; les conversations sont supprimées après *N* jours de silence; les SMS transitent par voip.ms et les fournisseurs de services mobiles. | `SMS_IDLE_RETENTION_DAYS` (7 par défaut) |
 | Journaux de la passerelle | 7 fichiers quotidiens, sans texte de message, sans numéro de téléphone, sans jeton ni mot de passe. | – |
 | Où se trouvent les données | là où **vous** hébergez WordPress, le serveur de clavardage, le serveur Matrix et le proxy | vos choix d’hébergement |
@@ -90,7 +91,7 @@ s’appliquent pas, ainsi que le bloc SMS si vous n’offrez pas les SMS.*
 > - Votre adresse IP, gardée brièvement dans la mémoire de notre serveur de clavardage pour limiter les
 >   abus, et consignée dans les journaux techniques de nos serveurs pendant `[X jours]`. Si un bénévole
 >   bloque une connexion pour cause d’abus, nous conservons aussi une empreinte illisible de cette adresse
->   (elle ne permet pas de retrouver l’adresse) jusqu’à la fin du blocage, `[1 jour]` par défaut et jamais
+>   (elle ne permet pas de retrouver l’adresse), et un petit marqueur « bloqué jusqu’à » dans le navigateur bloqué, jusqu’à la fin du blocage, `[1 jour]` par défaut et jamais
 >   plus de `[30 jours]`.
 >
 > Nous ne vous demandons **pas** votre nom, votre adresse courriel ni votre numéro de téléphone, et nous n’en
@@ -186,7 +187,7 @@ d’eux la prenne en privé (comme le fait la partie A).
 | Dois-je donner mon nom? | Non. Nous ne demandons aucun renseignement personnel. |
 | Qui peut lire ce que j’écris? | Seulement les `[BÉNÉVOLES]` de service, dans une salle privée et chiffrée (jusqu’à ce que l’un d’eux prenne votre conversation en privé; ensuite, seul ce bénévole). Pas les administrateurs du site Web. |
 | Est-ce vraiment anonyme? | Nous ne demandons pas qui vous êtes et ne gardons aucun historique. Votre fournisseur Internet et le réseau que vous utilisez peuvent tout de même voir que vous vous êtes connecté à ce site; utilisez un réseau privé si cela compte pour vous. |
-| Est-ce que quelque chose est enregistré sur mon appareil? | Aucun témoin et rien dans le stockage du navigateur : un identifiant temporaire vit seulement dans la page de clavardage ouverte et disparaît quand vous la fermez. |
+| Est-ce que quelque chose est enregistré sur mon appareil? | Aucun témoin et rien dans le stockage du navigateur : un identifiant temporaire vit seulement dans la page de clavardage ouverte et disparaît quand vous la fermez. Seule exception : si un bénévole vous bloque pour cause d’abus, un petit marqueur « bloqué jusqu’à » (sans renseignement personnel) est conservé dans votre navigateur jusqu’à la fin du blocage. |
 | Puis-je récupérer ma conversation? | Non : elle est supprimée quand elle se termine, personne ne peut donc la retrouver plus tard. |
 | Comment arrêter? | Appuyez sur **Terminer**. La conversation est supprimée et le bénévole en est informé. |
 | J’ai écrit quelque chose que je regrette. | Mettez fin au clavardage : il est supprimé. Vous pouvez aussi demander au bénévole d’y mettre fin. |

@@ -2,6 +2,15 @@
 
 # Historique des versions
 
+## 0.7.0
+- Le navigateur d’un visiteur bloqué garde un marqueur signé « bloqué jusqu’à » (clé `wpchat_blocked` du
+  `localStorage`, seulement après un blocage) et l’envoie quand il demande un nouveau clavardage : changer de VPN
+  ou de réseau ne contourne plus un blocage.
+- Épreuve de calcul : quand le serveur de clavardage la demande (après des abus, ou quand une même adresse ouvre
+  plusieurs clavardages), le module résout un court calcul avant le début du clavardage (« Vérification de votre
+  connexion… »). Aucun service tiers.
+- Exige switchboard-chat avec les mêmes fonctions; les anciens serveurs continuent de fonctionner sans elles.
+
 ## 0.6.0
 - Messages clairs pour un visiteur qui ne peut pas être servi : connexion bloquée (`!bloquer` par un répondant),
   personne de disponible, clavardage occupé ou trop de tentatives.

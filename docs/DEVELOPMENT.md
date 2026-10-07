@@ -41,6 +41,7 @@ Reset everything: `docker compose down -v`.
 ```bash
 node tests/widget-language.test.js       # language selection of the real widget code against a stubbed page
 node tests/sse-parser.test.js            # the text/event-stream parser (chunks split anywhere)
+node tests/pow.test.js                   # the widget's SHA-256 and proof-of-work solver against Node's crypto
 node tests/widget-flow.test.js           # real fetch streaming against a mock chat server: token header, reconnection, 401, end beacon, old-server fallback
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
@@ -56,7 +57,8 @@ language chosen for different browser language lists, site languages and forced 
   `wp-chat-fr_FR` is the same file with another `Language:` header).
 - Widget texts live in `languages/widget-strings.json` (same keys in `en` and `fr`).
 - Respondent text is inserted with `textContent`, never `innerHTML`.
-- The widget stores nothing in the browser (no `localStorage`/cookies of its own).
+- The widget stores nothing in the browser, with one exception: the signed "blocked until" marker
+  (`localStorage` key `wpchat_blocked`), written only for a visitor a respondent has blocked. Keep it that way.
 - **Bilingual documentation:** every document in `docs/` and every root file has a French version in
   `docs/fr/` (or `*.fr.md`) with the same outline. Change both together.
 

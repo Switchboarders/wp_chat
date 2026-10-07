@@ -47,9 +47,10 @@ The API in detail is in the chat server's `docs/web-chat.md`.
 | Visitor identifier | session token in the widget's memory (no cookie, no browser storage); its hash in the chat server's memory | until the chat ends, the page is closed, or it times out |
 | Visitor IP address | chat server memory, for rate limiting | at most one hour |
 | Block list (only after a respondent uses `!ban`) | chat server database: keyed hash of the IPv4 address or IPv6 /64 network, and an end date | until the block expires (default 1 day); no reason, no content, no readable address |
+| Block marker (only after a respondent blocks the visitor) | the blocked visitor's browser, `localStorage` key `wpchat_blocked`: a signed "blocked until" marker (two dates and a signature, no identifier) | until the block ends; the visitor can delete it |
 | Anything about the visitor on WordPress | **nothing** | – |
 
-The widget uses **no** `localStorage`, no analytics, no third-party scripts or fonts. A page reload
+The widget uses `localStorage` **only** for the block marker above, and no analytics, no third-party scripts or fonts. A page reload
 loses the on-screen conversation by design (the server keeps no transcript to restore).
 
 ## Security model
@@ -60,6 +61,9 @@ loses the on-screen conversation by design (the server keeps no transcript to re
   sent in an `Authorization` header over HTTPS; the server keeps only its hash. Unlike an HTTP-only cookie
   it is readable by script running in the page, so keep WordPress and its plugins up to date.
 - **Limits:** message size and rate, new sessions per IP and simultaneous chats are capped by the server.
+- **Abuse controls:** respondents can block a visitor (`!ban`): the server refuses that connection for a while and
+  the visitor's browser keeps a signed marker so a new VPN does not help. When there has been abuse lately, the
+  widget first solves a short computation (proof of work) before a chat starts; it uses no third-party service.
 - **Output:** respondent text is displayed as plain text (`textContent`), never as HTML.
 - **Confidentiality:** the Matrix room is end-to-end encrypted; the browser-to-server link is HTTPS.
   The "one-on-one" appearance is deliberate: the visitor sees one generic respondent name.

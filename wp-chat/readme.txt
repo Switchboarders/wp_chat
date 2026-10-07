@@ -1,7 +1,7 @@
 === WP Chat ===
 Requires at least: 5.8
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPL-2.0-or-later
 
 Minimizable one-on-one chat widget connecting visitors directly to a switchboard-chat backend.
@@ -21,7 +21,7 @@ The widget has French and English texts and, by default, follows the visitor's b
 Settings > WP Chat > "Show the chat on": all pages (default) or only the pages you tick, optionally also on blog posts.
 
 == Privacy ==
-No third-party scripts, fonts or analytics. Suggested privacy-policy text is registered under Settings > Privacy.
+No third-party scripts, fonts or analytics. The only thing the widget stores in the browser is a "blocked until" marker, and only for a visitor a respondent has blocked for abuse. Suggested privacy-policy text is registered under Settings > Privacy.
 
 == Description (français) ==
 Fenêtre de clavardage réductible, en tête-à-tête, qui relie directement les visiteurs à un serveur switchboard-chat. Le navigateur du visiteur parle directement au serveur. Ce site WordPress ne stocke aucun contenu de message ni aucune donnée sur les visiteurs; seuls les réglages du module sont enregistrés. Le module garde un jeton de session aléatoire temporaire dans la mémoire de la page (aucun témoin) et le serveur supprime la conversation à la fin du clavardage, à la fermeture de la page ou après un délai d'inactivité.
@@ -38,4 +38,4 @@ Le module a des textes en français et en anglais et, par défaut, suit la langu
 Réglages > WP Chat > « Afficher le clavardage sur » : toutes les pages (par défaut) ou seulement les pages cochées, éventuellement aussi les articles de blogue.
 
 == Confidentialité (français) ==
-Aucun script, aucune police ni aucune analytique de tiers. Un texte de politique de confidentialité suggéré est enregistré sous Réglages > Confidentialité.
+Aucun script, aucune police ni aucune analytique de tiers. Le seul élément que le module stocke dans le navigateur est un marqueur « bloqué jusqu'à », et seulement pour un visiteur qu'un répondant a bloqué pour cause d'abus. Un texte de politique de confidentialité suggéré est enregistré sous Réglages > Confidentialité.

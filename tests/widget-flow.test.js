@@ -1,7 +1,7 @@
 // End-to-end test of the widget's connection logic: runs wp-chat/assets/chat.js (real fetch, real
 // streaming, fake DOM) against a small mock of the switchboard-chat web API.
 //   node tests/widget-flow.test.js
-const fs = require('fs'), vm = require('vm'), http = require('http');
+const fs = require('fs'), vm = require('vm'), http = require('http'), crypto = require('crypto');
 const code = fs.readFileSync('wp-chat/assets/chat.js', 'utf8');
 const strings = JSON.parse(fs.readFileSync('wp-chat/languages/widget-strings.json', 'utf8'));
 
@@ -14,11 +14,14 @@ class El {
   focus() {}
 }
 
-function startWidget(base, extraCfg) {
+function fakeStorage(initial) { const m = new Map(Object.entries(initial || {})); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), _m: m }; }
+
+function startWidget(base, extraCfg, storage) {
   const made = [], root = new El('div'), winListeners = {}, beacons = [], esCreated = [];
   const document = { getElementById: () => root, createElement: t => { const e = new El(t); made.push(e); return e; } };
   const window = { WPChatConfig: { backend: base, color: '#000', privacyUrl: '', officer: '', langMode: 'en', siteLang: 'en', strings, custom: {}, ...(extraCfg || {}) },
     navigator: { language: 'en', sendBeacon: (url, blob) => { beacons.push({ url, blob }); return true; } },
+    localStorage: storage || fakeStorage(),
     addEventListener: (t, fn) => { winListeners[t] = fn; } };
   function EventSource(url, opts) { esCreated.push({ url, opts }); this.addEventListener = () => {}; this.close = () => {}; }
   vm.runInNewContext(code, { window, document, navigator: window.navigator, EventSource, fetch, AbortController, TextDecoder, Blob, JSON, Math, setTimeout, clearTimeout });
@@ -118,6 +121,78 @@ async function refusedVisitors() {
   }
 }
 
+function zeroBitsOf(buf) { let b = 0; for (const x of buf) { if (x === 0) { b += 8; continue; } b += Math.clz32(x) - 24; break; } return b; }
+
+async function challengeFlow() {
+  const log = { sessionCalls: 0, solved: null };
+  const CH = 'chal.v1', BITS = 12;
+  const server = http.createServer((req, res) => {
+    let body = ''; req.on('data', d => body += d);
+    req.on('end', () => {
+      res.setHeader('content-type', 'application/json');
+      if (req.url === '/web/session') {
+        log.sessionCalls++;
+        let sol = null; try { sol = JSON.parse(body); } catch (e) { /* first call has no body */ }
+        if (sol && sol.challenge === CH && sol.nonce && zeroBitsOf(crypto.createHash('sha256').update(CH + ':' + sol.nonce).digest()) >= BITS) { log.solved = sol.nonce; return res.end(JSON.stringify({ resumed: false, token: 'tokC' })); }
+        res.statusCode = 428; return res.end(JSON.stringify({ error: 'challenge_required', challenge: CH, bits: BITS }));
+      }
+      if (req.url === '/web/stream') { res.writeHead(200, { 'content-type': 'text/event-stream' }); return res.write(': hi\n\n'); }
+      res.end('{}');
+    });
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const w = startWidget('http://127.0.0.1:' + server.address().port);
+  w.byClass('wpc-start').fire('click');
+  await until(() => !w.byClass('wpc-form').hidden, 'chat started after the challenge');
+  check(log.sessionCalls === 2 && log.solved !== null, 'challenge: first call refused (428), the widget solves it and the retry is accepted (nonce ' + log.solved + ')');
+  check(w.byClass('wpc-start').textContent === strings.en.start, 'challenge: the start button text is restored');
+  server.close();
+}
+
+async function bannedBrowserMarker() {
+  const seen = { blockHeaders: [] };
+  const MARKER = '1700000000.' + (Math.floor(Date.now() / 1000) + 86400) + '.sig';
+  const server = http.createServer((req, res) => {
+    let body = ''; req.on('data', d => body += d);
+    req.on('end', () => {
+      res.setHeader('content-type', 'application/json');
+      if (req.url === '/web/session') {
+        seen.blockHeaders.push(req.headers['x-wpchat-block'] || null);
+        if (req.headers['x-wpchat-block']) { res.statusCode = 403; return res.end(JSON.stringify({ error: 'blocked' })); }
+        return res.end(JSON.stringify({ resumed: false, token: 'tokD' }));
+      }
+      if (req.url === '/web/stream') {
+        res.writeHead(200, { 'content-type': 'text/event-stream' });
+        res.write(': hi\n\n');
+        setTimeout(() => res.write('event: banned\ndata: ' + JSON.stringify({ until: Math.floor(Date.now() / 1000) + 86400, marker: MARKER }) + '\n\nevent: closed\ndata: {}\n\n'), 60);
+        return;
+      }
+      res.end('{}');
+    });
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const base = 'http://127.0.0.1:' + server.address().port, storage = fakeStorage();
+  const w = startWidget(base, { unavailableText: 'Call 555-0100.' }, storage);
+  check(storage.getItem('wpchat_blocked') === null, 'marker: nothing is stored for a visitor who was never blocked');
+  w.byClass('wpc-start').fire('click');
+  await until(() => storage.getItem('wpchat_blocked') !== null, 'marker stored after a ban');
+  check(JSON.parse(storage.getItem('wpchat_blocked')).marker === MARKER, 'marker: the banned browser keeps the server\'s signed marker');
+  await until(() => w.texts().some(t => t.includes(strings.en.blocked)), 'blocked message');
+  check(w.texts().some(t => t.includes('Call 555-0100.')), 'marker: the visitor is told the chat is not available and shown the contact text');
+  // the same browser later, from another "network": the marker is sent and the server refuses
+  const w2 = startWidget(base, {}, storage);
+  w2.byClass('wpc-start').fire('click');
+  await until(() => w2.texts().some(t => t.includes(strings.en.blocked)), 'blocked again');
+  check(seen.blockHeaders[seen.blockHeaders.length - 1] === MARKER, 'marker: sent in X-WPChat-Block when a new chat is requested');
+  // an expired marker is dropped and not sent
+  const old = fakeStorage({ wpchat_blocked: JSON.stringify({ until: Math.floor(Date.now() / 1000) - 10, marker: 'old.marker.sig' }) });
+  const w3 = startWidget(base, {}, old);
+  w3.byClass('wpc-start').fire('click');
+  await until(() => !w3.byClass('wpc-form').hidden, 'chat starts with an expired marker');
+  check(seen.blockHeaders[seen.blockHeaders.length - 1] === null && old.getItem('wpchat_blocked') === null, 'marker: an expired marker is removed and not sent');
+  server.close();
+}
+
 async function legacyCookieServer() {
   const server = http.createServer((req, res) => {
     req.on('data', () => {}); req.on('end', () => { res.setHeader('content-type', 'application/json'); res.end('{"resumed":false}'); });
@@ -131,7 +206,7 @@ async function legacyCookieServer() {
 }
 
 (async () => {
-  try { await tokenMode(); await beaconOnPageHide(); await refusedVisitors(); await legacyCookieServer(); }
+  try { await tokenMode(); await beaconOnPageHide(); await refusedVisitors(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
   catch (e) { failures++; console.log('FAIL', e.message); }
   console.log(failures ? failures + ' failure(s)' : 'all passed');
   process.exit(failures ? 1 : 0);

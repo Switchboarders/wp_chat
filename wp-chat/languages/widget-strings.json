@@ -18,7 +18,8 @@
 		"blocked": "The chat is not available from this connection right now.",
 		"unavailable": "No one is available to answer right now. Please try again a little later.",
 		"busy": "The chat is very busy right now. Please try again in a few minutes.",
-		"rate": "Please wait a moment before trying again."
+		"rate": "Please wait a moment before trying again.",
+		"checking": "Checking your connection… one moment."
 	},
 	"fr": {
 		"open": "Ouvrir le clavardage",
@@ -39,6 +40,7 @@
 		"blocked": "Le clavardage n’est pas accessible depuis cette connexion pour le moment.",
 		"unavailable": "Personne n’est disponible pour répondre en ce moment. Veuillez réessayer un peu plus tard.",
 		"busy": "Le clavardage est très sollicité en ce moment. Veuillez réessayer dans quelques minutes.",
-		"rate": "Veuillez patienter un instant avant de réessayer."
+		"rate": "Veuillez patienter un instant avant de réessayer.",
+		"checking": "Vérification de votre connexion… un instant."
 	}
 }

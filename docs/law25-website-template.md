@@ -45,6 +45,7 @@ French. If your site is bilingual, publish both.
 | Restart of the chat server | Ends all open chats (sessions are in memory). | – |
 | Profiling / tracking | None: no analytics, advertising, or third-party scripts in the widget; no technology to identify, locate or profile the visitor. | – (your **site's other** analytics are separate: describe them in your general policy) |
 | Blocking abusive visitors | A respondent can type `!ban`: the chat ends and the visitor's connection is refused for a set time (default 1 day). The server then keeps a **keyed hash** of the IPv4 address or IPv6 /64 network and an end date (no reason, no content), and deletes it at expiry. Say so in the policy. | `WEB_BAN_DAYS`, `WEB_BAN_MAX_DAYS` |
+| Block marker in the browser | Only for a visitor a respondent blocked: the widget stores a signed "blocked until" marker in the browser's `localStorage` (two dates and a signature, no identifier) so that changing network does not help. Nothing is stored for anyone else. Say so in the policy. | ends with the block |
 | If you also run the SMS line | The caller's phone number is stored encrypted and hashed; conversations are deleted after *N* days of silence; SMS pass through voip.ms and mobile carriers. | `SMS_IDLE_RETENTION_DAYS` (default 7) |
 | Server logs of the bridge | 7 daily files, no message text, no phone number, no token or password. | – |
 | Where data lives | wherever **you** host WordPress, the chat server, the Matrix server and the proxy | your hosting choices |
@@ -85,7 +86,8 @@ SMS block if you do not offer SMS.*
 >   your conversation can continue while you chat. It contains no information about you.
 > - Your IP address, held briefly in the memory of our chat server to limit abuse, and recorded in the
 >   technical logs of our servers for `[X days]`. If a volunteer blocks a connection for abuse, we also keep
->   an unreadable fingerprint of that address (it cannot be turned back into the address) until the block
+>   an unreadable fingerprint of that address (it cannot be turned back into the address), and a small
+>   "blocked until" marker in the blocked browser, until the block
 >   ends, `[1 day]` by default and never more than `[30 days]`.
 >
 > We do **not** ask for your name, email address or phone number, and we do not need them to chat.
@@ -173,7 +175,7 @@ duty may see a new conversation until one takes it privately (as Part A does).
 | Do I need to give my name? | No. We do not ask for any personal detail. |
 | Who can read what I write? | Only the `[VOLUNTEERS]` on duty, in a private encrypted room (until one of them takes your conversation privately, then only that volunteer). Not the website's administrators. |
 | Is it really anonymous? | We do not ask who you are and keep no history. Your internet provider and the network you use can still see that you connected to this site; use a private network if that matters. |
-| Is anything saved on my device? | No cookie and nothing in the browser's storage: a temporary identifier lives in the open chat page only and disappears when you close it. |
+| Is anything saved on my device? | No cookie and nothing in the browser's storage: a temporary identifier lives in the open chat page only and disappears when you close it. The one exception: if a volunteer blocks you for abuse, a small "blocked until" marker (no personal information) is kept in your browser until the block ends. |
 | Can I get my conversation back? | No: it is deleted when it ends, so nobody can retrieve it later. |
 | How do I stop? | Press **End chat**. The conversation is deleted and the volunteer is told. |
 | I wrote something I regret. | End the chat; it is deleted. You can also ask the volunteer to end it. |

@@ -2,6 +2,13 @@
 
 # Changelog
 
+## 0.7.0
+- A blocked visitor's browser keeps a signed "blocked until" marker (`localStorage` key `wpchat_blocked`, only after a
+  block) and sends it when asking for a new chat, so changing VPN or network no longer gets around a ban.
+- Proof-of-work challenge: when the chat server asks (after abuse, or when one address opens several chats), the
+  widget solves a short computation before the chat starts ("Checking your connection…"). No third-party service.
+- Requires switchboard-chat with the same features; older servers keep working without them.
+
 ## 0.6.0
 - Clear messages for a visitor who cannot be served: blocked connection (`!ban` by a respondent), nobody
   available, chat busy, or too many attempts.

@@ -75,7 +75,7 @@ wp option update wp_chat_options '{"backend_url":"https://chat.example.org","pri
 4. The respondent types `!fin` (or the visitor presses **End chat**): the widget says the chat ended.
 5. In the browser's developer tools (Network tab) the requests to the chat server carry an
    `Authorization: Bearer …` header. There is **no cookie** and nothing in the browser's storage
-   (Application tab), and WordPress holds nothing about the visitor.
+   (Application tab) unless the visitor was blocked, and WordPress holds nothing about the visitor.
 
 ## 5. Privacy text
 

@@ -50,9 +50,10 @@ L’API en détail se trouve dans le `docs/fr/web-chat.md` du serveur de clavard
 | Identifiant du visiteur | jeton de session dans la mémoire du module (aucun témoin, aucun stockage du navigateur); son empreinte dans la mémoire du serveur de clavardage | jusqu’à la fin du clavardage, la fermeture de la page ou son expiration |
 | Adresse IP du visiteur | mémoire du serveur de clavardage, pour les limites de débit | une heure au plus |
 | Liste de blocage (seulement après un `!bloquer` d’un répondant) | base de données du serveur de clavardage : empreinte à clé de l’adresse IPv4 ou du réseau IPv6 /64, et une date de fin | jusqu’à l’expiration du blocage (1 jour par défaut); aucun motif, aucun contenu, aucune adresse lisible |
+| Marqueur de blocage (seulement après qu’un répondant a bloqué le visiteur) | le navigateur du visiteur bloqué, clé `wpchat_blocked` du `localStorage` : un marqueur signé « bloqué jusqu’à » (deux dates et une signature, aucun identifiant) | jusqu’à la fin du blocage; le visiteur peut le supprimer |
 | Tout ce qui concerne le visiteur sur WordPress | **rien** | – |
 
-Le module n’utilise **aucun** `localStorage`, aucune analytique, aucun script ni police de tiers. Un
+Le module n’utilise le `localStorage` **que** pour le marqueur de blocage ci-dessus, et aucune analytique, aucun script ni police de tiers. Un
 rechargement de la page fait perdre la conversation affichée, par conception (le serveur ne conserve
 aucune transcription à restaurer).
 
@@ -67,6 +68,10 @@ aucune transcription à restaurer).
   gardez WordPress et ses extensions à jour.
 - **Limites :** la taille et le débit des messages, les nouvelles sessions par IP et les clavardages
   simultanés sont plafonnés par le serveur.
+- **Contrôles contre les abus :** les répondants peuvent bloquer un visiteur (`!bloquer`) : le serveur refuse cette
+  connexion pendant un moment et le navigateur du visiteur garde un marqueur signé, de sorte qu’un nouveau VPN
+  n’aide pas. Quand il y a eu des abus récemment, le module résout d’abord un court calcul (épreuve de calcul)
+  avant qu’un clavardage commence; il n’utilise aucun service tiers.
 - **Affichage :** le texte du répondant est affiché en texte brut (`textContent`), jamais en HTML.
 - **Confidentialité :** la salle Matrix est chiffrée de bout en bout; la liaison navigateur–serveur est en
   HTTPS. L’apparence de « tête-à-tête » est voulue : le visiteur voit un seul nom de répondant générique.

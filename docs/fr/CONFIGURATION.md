@@ -88,6 +88,7 @@ Points d’accroche utiles :
   par une région `aria-live`, et tout fonctionne au clavier.
 - **Témoins (cookies) :** aucun. Le clavardage garde un jeton de session temporaire dans la mémoire de la
   page et l’envoie dans un en-tête; rien n’est stocké dans des témoins, `localStorage` ni
-  `sessionStorage`, et WordPress ne dépose aucun témoin pour ce module. (Un ancien témoin n’existe que si le
+  `sessionStorage` (une exception : un petit marqueur « bloqué jusqu’à » dans le `localStorage`, écrit seulement
+  pour un visiteur qu’un répondant a bloqué), et WordPress ne dépose aucun témoin pour ce module. (Un ancien témoin n’existe que si le
   serveur de clavardage fonctionne avec `WEB_SESSION_COOKIE=true`, pour les modules antérieurs à 0.5.0.)
   Le clavardage fonctionne donc quels que soient les réglages de témoins du navigateur.

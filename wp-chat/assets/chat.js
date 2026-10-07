@@ -36,6 +36,80 @@
 	}
 	window.WPChat = window.WPChat || {};
 	window.WPChat.createSseParser = createSseParser;
+
+	// SHA-256 of an ASCII string, as bytes. Used only for the proof-of-work challenge, so it is
+	// synchronous (no crypto.subtle round trips) and works on pages that are not "secure contexts".
+	var SHA_K = [
+		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+		0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+		0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+		0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+		0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+		0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+		0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+		0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+	];
+	function sha256(text) {
+		var len = text.length, total = ((len + 9 + 63) >> 6) << 6;
+		var buf = new Uint8Array(total);
+		for (var n = 0; n < len; n++) { buf[n] = text.charCodeAt(n) & 0xff; }
+		buf[len] = 0x80;
+		var view = new DataView(buf.buffer);
+		view.setUint32(total - 8, Math.floor((len * 8) / 4294967296));
+		view.setUint32(total - 4, (len * 8) >>> 0);
+		var h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+		var w = new Int32Array(64);
+		for (var off = 0; off < total; off += 64) {
+			var i, a, b;
+			for (i = 0; i < 16; i++) { w[i] = view.getInt32(off + i * 4); }
+			for (i = 16; i < 64; i++) {
+				a = w[i - 15]; b = w[i - 2];
+				w[i] = (w[i - 16] + (((a >>> 7) | (a << 25)) ^ ((a >>> 18) | (a << 14)) ^ (a >>> 3)) + w[i - 7] +
+					(((b >>> 17) | (b << 15)) ^ ((b >>> 19) | (b << 13)) ^ (b >>> 10))) | 0;
+			}
+			var A = h[0], B = h[1], C = h[2], D = h[3], E = h[4], F = h[5], G = h[6], H = h[7];
+			for (i = 0; i < 64; i++) {
+				var t1 = (H + (((E >>> 6) | (E << 26)) ^ ((E >>> 11) | (E << 21)) ^ ((E >>> 25) | (E << 7))) +
+					((E & F) ^ (~E & G)) + SHA_K[i] + w[i]) | 0;
+				var t2 = ((((A >>> 2) | (A << 30)) ^ ((A >>> 13) | (A << 19)) ^ ((A >>> 22) | (A << 10))) +
+					((A & B) ^ (A & C) ^ (B & C))) | 0;
+				H = G; G = F; F = E; E = (D + t1) | 0; D = C; C = B; B = A; A = (t1 + t2) | 0;
+			}
+			h[0] = (h[0] + A) | 0; h[1] = (h[1] + B) | 0; h[2] = (h[2] + C) | 0; h[3] = (h[3] + D) | 0;
+			h[4] = (h[4] + E) | 0; h[5] = (h[5] + F) | 0; h[6] = (h[6] + G) | 0; h[7] = (h[7] + H) | 0;
+		}
+		var out = new Uint8Array(32);
+		var ov = new DataView(out.buffer);
+		for (var k = 0; k < 8; k++) { ov.setInt32(k * 4, h[k]); }
+		return out;
+	}
+	function zeroBits(bytes) {
+		var bits = 0;
+		for (var i = 0; i < bytes.length; i++) {
+			if (bytes[i] === 0) { bits += 8; continue; }
+			var b = bytes[i];
+			while ((b & 0x80) === 0) { bits++; b <<= 1; }
+			break;
+		}
+		return bits;
+	}
+	// Finds a nonce so that SHA-256(challenge + ':' + nonce) starts with `bits` zero bits, in slices
+	// of ~12 ms so the page stays responsive. Gives up after `limitMs`.
+	function solvePow(challenge, bits, onDone, onFail, limitMs) {
+		var nonce = 0, started = Date.now(), prefix = challenge + ':';
+		(function slice() {
+			var until = Date.now() + 12;
+			while (Date.now() < until) {
+				if (zeroBits(sha256(prefix + nonce)) >= bits) { onDone(String(nonce)); return; }
+				nonce++;
+			}
+			if (Date.now() - started > limitMs) { onFail(); return; }
+			setTimeout(slice, 0);
+		})();
+	}
+	window.WPChat.sha256 = sha256;
+	window.WPChat.zeroBits = zeroBits;
+	window.WPChat.solvePow = solvePow;
 	var cfg = window.WPChatConfig;
 	var root = document.getElementById('wp-chat-root');
 	if (!cfg || !root) { return; }
@@ -70,8 +144,9 @@
 		return e;
 	}
 
-	function api(path, body) {
+	function api(path, body, extraHeaders) {
 		var headers = { 'Content-Type': 'application/json' };
+		if (extraHeaders) { Object.keys(extraHeaders).forEach(function (k) { headers[k] = extraHeaders[k]; }); }
 		if (token) { headers.Authorization = 'Bearer ' + token; }
 		return fetch(cfg.backend + path, {
 			method: 'POST',
@@ -87,6 +162,7 @@
 					var err = new Error(String(r.status));
 					err.status = r.status;
 					err.code = b && b.error;
+					err.body = b;
 					throw err;
 				});
 			}
@@ -144,6 +220,21 @@
 	}
 	function notice(text) { log.appendChild(el('div', 'wpc-notice', text)); log.scrollTop = log.scrollHeight; }
 
+	// The only thing this widget ever keeps in the browser, and only for a visitor a respondent has blocked:
+	// a signed "blocked until" marker (two dates and a signature, no identifier). It is sent when a new
+	// chat is requested, so changing network does not help a blocked browser.
+	function storedMarker() {
+		try {
+			var m = JSON.parse(window.localStorage.getItem('wpchat_blocked') || 'null');
+			if (m && m.marker && m.until * 1000 > Date.now()) { return m; }
+			window.localStorage.removeItem('wpchat_blocked');
+		} catch (e) { /* storage unavailable: nothing to do */ }
+		return null;
+	}
+	function saveMarker(until, marker) {
+		try { window.localStorage.setItem('wpchat_blocked', JSON.stringify({ until: until, marker: marker })); } catch (e) { /* ignore */ }
+	}
+
 	// Says what is wrong in words the visitor can act on; for "can't be served" cases it adds the
 	// administrator's own text (for example another number to call).
 	function showProblem(e) {
@@ -188,6 +279,10 @@
 			typing.hidden = false;
 			clearTimeout(typingTimer);
 			typingTimer = setTimeout(function () { typing.hidden = true; }, 4000);
+		} else if (name === 'banned') {
+			try { var b = JSON.parse(data); saveMarker(b.until, b.marker); } catch (e) { /* ignore */ }
+			notice(t.blocked);
+			if (cfg.unavailableText) { notice(cfg.unavailableText); }
 		} else if (name === 'closed') {
 			finish();
 		}
@@ -237,24 +332,41 @@
 			clearTimeout(typingTimer);
 			typingTimer = setTimeout(function () { typing.hidden = true; }, 4000);
 		});
+		es.addEventListener('banned', function (ev) { onServerEvent('banned', ev.data); });
 		es.addEventListener('closed', finish);
 		// EventSource reconnects by itself on transient errors.
 	}
 
-	btnStart.addEventListener('click', function () {
+	function startChat(solution, attempt) {
 		btnStart.disabled = true;
-		api('/web/session').then(function (j) {
+		var marker = storedMarker();
+		api('/web/session', solution, marker ? { 'X-WPChat-Block': marker.marker } : null).then(function (j) {
 			token = (j && j.token) || null;
 			started = true;
+			btnStart.textContent = t.start;
 			consent.hidden = true; log.hidden = false; form.hidden = false; btnEnd.hidden = false;
 			openStream();
 			input.focus();
 		}).catch(function (e) {
+			// The server asks for a short proof of work (after abuse, or when this address opens many chats)
+			if (e && e.code === 'challenge_required' && e.body && e.body.challenge && attempt < 3) {
+				btnStart.textContent = t.checking;
+				solvePow(e.body.challenge, e.body.bits, function (nonce) {
+					startChat({ challenge: e.body.challenge, nonce: nonce }, attempt + 1);
+				}, function () {
+					btnStart.textContent = t.start; btnStart.disabled = false;
+					notice(t.error); log.hidden = false;
+				}, 120000);
+				return;
+			}
+			btnStart.textContent = t.start;
 			btnStart.disabled = false;
 			showProblem(e);
 			log.hidden = false;
 		});
-	});
+	}
+
+	btnStart.addEventListener('click', function () { startChat(null, 0); });
 
 	form.addEventListener('submit', function (e) {
 		e.preventDefault();
