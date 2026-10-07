@@ -73,8 +73,9 @@ wp option update wp_chat_options '{"backend_url":"https://chat.example.org","pri
 2. Click it, read the notice, press the start button and send a message.
 3. A respondent opens the new room in their Matrix client and answers; the answer appears in the widget.
 4. The respondent types `!fin` (or the visitor presses **End chat**): the widget says the chat ended.
-5. In the browser's developer tools (Application → Cookies, for the *chat server's* domain) there is
-   one cookie `wpchat`; WordPress's own storage holds nothing about the visitor.
+5. In the browser's developer tools (Network tab) the requests to the chat server carry an
+   `Authorization: Bearer …` header. There is **no cookie** and nothing in the browser's storage
+   (Application tab), and WordPress holds nothing about the visitor.
 
 ## 5. Privacy text
 

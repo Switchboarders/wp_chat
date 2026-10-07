@@ -26,14 +26,15 @@ WordPress is **not** in the message path: it never receives, relays or stores a 
 2. The visitor clicks the bubble: the window opens with the **consent notice** (what is kept, for how
    long, who to contact). Nothing is sent yet.
 3. The visitor presses start: the widget calls the chat server (`POST /web/session`). The server
-   checks that the page's origin is allowed, creates an in-memory session and sets one cookie
-   with a random identifier (`HttpOnly; Secure; SameSite=None`).
+   checks that the page's origin is allowed, creates an in-memory session and returns a random
+   session token, which the widget keeps in its memory and sends in an `Authorization` header (no cookie).
 4. The widget opens a live connection (`GET /web/stream`, server-sent events) to receive replies.
 5. The first message makes the server create the Matrix room and invite the active respondents.
    Each message is a `POST /web/message`.
 6. A respondent's reply is pushed through the live connection and shown in the window.
-7. The chat ends when the visitor presses **End chat** (`POST /web/end`), a respondent types `!fin`,
-   or the idle timeout passes. The room is left and forgotten and the session disappears.
+7. The chat ends when the visitor presses **End chat** (`POST /web/end`) or closes the page, a
+   respondent types `!fin`, the idle timeout passes, or the visitor's connection stays closed for a few
+   minutes. The room is left and forgotten and the session disappears.
 
 The API in detail is in the chat server's `docs/web-chat.md`.
 
@@ -43,7 +44,7 @@ The API in detail is in the chat server's `docs/web-chat.md`.
 |---|---|---|
 | Plugin settings | WordPress database (`wp_options`, key `wp_chat_options`) | until you delete the plugin |
 | Message text | browser memory (the open window) and the chat server's memory in transit; Matrix room (encrypted) while the chat lasts | gone on reload (browser); never written to disk or logs by the server; room deleted at the end |
-| Visitor identifier | cookie `wpchat` in the browser; its hash in the chat server's memory | until the chat ends or times out |
+| Visitor identifier | session token in the widget's memory (no cookie, no browser storage); its hash in the chat server's memory | until the chat ends, the page is closed, or it times out |
 | Visitor IP address | chat server memory, for rate limiting | at most one hour |
 | Anything about the visitor on WordPress | **nothing** | – |
 
@@ -53,8 +54,10 @@ loses the on-screen conversation by design (the server keeps no transcript to re
 ## Security model
 
 - **Origin allow-list:** the server only answers the website addresses listed in `WEB_ALLOWED_ORIGINS`
-  (CORS plus an explicit `Origin` check on every call), so another site cannot use a visitor's cookie.
-- **Cookie:** random, HTTP-only (scripts cannot read it), HTTPS-only.
+  (CORS plus an explicit `Origin` check on every call), so another site cannot use a visitor's session.
+- **Session token:** random, kept only in the widget's memory (not in a cookie or any browser storage) and
+  sent in an `Authorization` header over HTTPS; the server keeps only its hash. Unlike an HTTP-only cookie
+  it is readable by script running in the page, so keep WordPress and its plugins up to date.
 - **Limits:** message size and rate, new sessions per IP and simultaneous chats are capped by the server.
 - **Output:** respondent text is displayed as plain text (`textContent`), never as HTML.
 - **Confidentiality:** the Matrix room is end-to-end encrypted; the browser-to-server link is HTTPS.
@@ -62,9 +65,9 @@ loses the on-screen conversation by design (the server keeps no transcript to re
 
 ## Browser support
 
-Any current browser with `fetch` and `EventSource` (Chrome, Edge, Firefox, Safari). The chat cookie
-must not be blocked: it is first-party when the chat server is a sub-domain of the website's
-domain (recommended), third-party otherwise (see TROUBLESHOOTING.md).
+Any current browser with `fetch` response streaming (Chrome, Edge, Firefox, Safari, Samsung Internet).
+Because no cookie is used, browsers' third-party cookie and tracking-protection settings do not affect
+the chat, and the chat server may be on any domain.
 
 ## Related documents
 

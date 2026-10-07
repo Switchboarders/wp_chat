@@ -17,7 +17,7 @@ détails ci-dessous.
 | **« Tester le serveur de clavardage » indique qu’il ne peut pas joindre le serveur** | Mêmes causes. Le HTTPS doit être valide (un certificat expiré ou autosigné est refusé par les navigateurs). |
 | **Le visiteur peut écrire, mais les réponses n’apparaissent jamais** | Un proxy placé devant le serveur de clavardage met le flux en direct en mémoire tampon. Suivez l’essai de diffusion du `docs/fr/reverse-proxy.md` du serveur. Vérifiez aussi que le répondant a bien répondu dans la bonne salle. |
 | **« Aucun répondant disponible » / erreur 503** | Aucun répondant actif dans le `WEB_CALL_CENTER_ID` du serveur, ou le serveur n’est pas configuré. |
-| **Fonctionne dans Chrome, pas dans Safari / Firefox (mode strict)** | Le témoin est bloqué comme témoin tiers. Servez le clavardage depuis un **sous-domaine du domaine du site Web** (site `www.example.org`, clavardage `chat.example.org`). |
+| **« Problème de connexion » juste après le premier message** | Le serveur a répondu `401` : il n’accepte pas le jeton de session. Soit le serveur de clavardage est plus ancien que le module 0.5.0 et le navigateur bloque son témoin (mettez le serveur à jour), soit le clavardage est déjà terminé / expiré / le serveur a redémarré. Voir « Lire l’onglet Réseau du navigateur ». |
 | **Fonctionne un moment, puis « Problème de connexion »** | Le clavardage a expiré (délai d’inactivité) ou le serveur a redémarré : les clavardages Web vivent en mémoire. Démarrez un nouveau clavardage. |
 | **Beaucoup de visiteurs reçoivent « rate limited » (limite de débit atteinte)** | Le serveur voit l’adresse du proxy pour tout le monde : le proxy doit transmettre `X-Forwarded-For` (documentation du serveur). |
 | **Bouton caché derrière une bannière de témoins ou un autre module** | Déplacez-le avec du CSS (voir CONFIGURATION.md, « Apparence »). |
@@ -34,12 +34,13 @@ serveur de clavardage :
 
 | Requête | En bonne santé | Sinon |
 |---|---|---|
-| `session` (POST) | `200`, en-tête de réponse `set-cookie: wpchat=…` | `403 origin_not_allowed` : l’origine manque dans `WEB_ALLOWED_ORIGINS`. `503` : serveur non configuré ou aucun répondant. `(blocked)` / erreur CORS dans la console : mauvaise adresse, pas de HTTPS, ou origine non autorisée. |
-| `message` (POST) | `200` | `401` : le témoin n’a pas été renvoyé (bloqué comme témoin tiers, voir plus haut). `429` : limite de débit. |
-| `stream` (GET, type `eventsource`) | reste **en attente** (ouvert) et affiche les messages entrants | `401` : témoin non envoyé. Se termine aussitôt : un proxy ou un pare-feu le coupe. N’affiche rien quand une réponse est envoyée : mise en mémoire tampon. |
+| `session` (POST) | `200`, corps JSON avec un `token` | `403 origin_not_allowed` : l’origine manque dans `WEB_ALLOWED_ORIGINS`. `503` : serveur non configuré ou aucun répondant. `(blocked)` / erreur CORS dans la console : mauvaise adresse, pas de HTTPS, ou origine non autorisée. |
+| `message` (POST) | `200` | `401` : aucun jeton valide (le clavardage est terminé, expiré ou le serveur a redémarré), ou serveur trop ancien pour ce module (mettez-le à jour). `429` : limite de débit. |
+| `stream` (GET, type `fetch`) | reste **en attente** (ouvert) et affiche les messages entrants | `401` : aucun jeton valide. Se termine aussitôt : un proxy ou un pare-feu le coupe. N’affiche rien quand une réponse est envoyée : mise en mémoire tampon. |
 
-Témoins : Application → Cookies → le domaine **du serveur de clavardage** doit lister `wpchat` après la
-première étape. Un témoin grisé ou absent, avec une icône d’avertissement, signifie qu’il a été bloqué.
+Jeton : les requêtes `message` et `stream` doivent porter un en-tête de requête `authorization: Bearer …`.
+S’il manque, la réponse de `session` ne contenait pas de `token` (serveur de clavardage plus ancien que le
+module 0.5.0, qui fonctionne alors avec des témoins; certains navigateurs les bloquent).
 
 ## Toujours coincé?
 

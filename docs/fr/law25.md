@@ -16,7 +16,7 @@ juriste les avis et l’évaluation des facteurs relatifs à la vie privée (EFV
 | Donnée | Où | Forme | Conservée jusqu’à |
 |---|---|---|---|
 | Texte des messages du clavardage Web | Navigateur ↔ mémoire de switchboard-chat ↔ salle Matrix | Jamais écrit sur disque ni dans les journaux par la passerelle. La salle Matrix est chiffrée de bout en bout. | Fin du clavardage ou délai d’inactivité (`WEB_IDLE_TIMEOUT_MIN`, 24 h par défaut). La passerelle quitte la salle et l’oublie. |
-| Identifiant du visiteur Web | Témoin `wpchat` dans le navigateur, son empreinte SHA-256 dans la mémoire de la passerelle | Aléatoire, sans lien avec une personne | Fin du clavardage / délai. Perdu au redémarrage de la passerelle. |
+| Identifiant du visiteur Web | Jeton de session dans la mémoire du module (jamais dans un témoin ni dans le stockage du navigateur), son empreinte SHA-256 dans la mémoire de la passerelle | Aléatoire, sans lien avec une personne | Fin du clavardage / délai / page fermée. Perdu au redémarrage de la passerelle. |
 | Numéro d’appelant fictif (Web) | Base de données, table `room` | Numéro aléatoire, haché + chiffré | Supprimé avec la salle |
 | Texte des SMS | voip.ms → passerelle → salle Matrix | Non conservé par la passerelle, sauf dans une file de reprise (plus bas). La salle Matrix est chiffrée. | Salle supprimée après `SMS_IDLE_RETENTION_DAYS` (7 par défaut) sans texto de l’appelant |
 | Numéro de téléphone de l’appelant | Base de données, table `room` | Empreinte à clé (recherche) + copie chiffrée AES-256-GCM (nécessaire pour répondre) | Supprimé avec la salle |

@@ -40,6 +40,8 @@ Tout réinitialiser : `docker compose down -v`.
 
 ```bash
 node tests/widget-language.test.js       # choix de la langue par le vrai code du module, face à une page simulée
+node tests/sse-parser.test.js            # l’analyseur de text/event-stream (blocs découpés n’importe où)
+node tests/widget-flow.test.js           # vraie diffusion fetch face à un faux serveur de clavardage : en-tête du jeton, reconnexion, 401, avis de fermeture, repli vers un ancien serveur
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
 

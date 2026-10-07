@@ -82,9 +82,9 @@ wp option update wp_chat_options '{"backend_url":"https://chat.example.org","pri
    module.
 4. Le répondant écrit `!fin` (ou le visiteur appuie sur **Terminer**) : le module indique que le
    clavardage est terminé.
-5. Dans les outils de développement du navigateur (Application → Cookies, pour le domaine *du serveur de
-   clavardage*), il y a un seul témoin `wpchat`; le stockage propre à WordPress ne contient rien sur le
-   visiteur.
+5. Dans les outils de développement du navigateur (onglet Réseau), les requêtes vers le serveur de
+   clavardage portent un en-tête `Authorization: Bearer …`. Il n’y a **aucun témoin** ni rien dans le
+   stockage du navigateur (onglet Application), et WordPress ne détient rien sur le visiteur.
 
 ## 5. Texte de confidentialité
 

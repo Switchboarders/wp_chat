@@ -85,7 +85,8 @@ Points d’accroche utiles :
 - **Multisite :** activez et configurez par site.
 - **Accessibilité :** la fenêtre est une boîte de dialogue étiquetée, les nouveaux messages sont annoncés
   par une région `aria-live`, et tout fonctionne au clavier.
-- **Témoins (cookies) :** c’est le *serveur de clavardage* qui dépose le seul témoin (`wpchat`);
-  WordPress n’en dépose aucun pour ce module. Il sert seulement à poursuivre la conversation; plusieurs
-  politiques le considèrent comme strictement nécessaire, mais décidez-le avec la personne responsable
-  de la protection des renseignements personnels.
+- **Témoins (cookies) :** aucun. Le clavardage garde un jeton de session temporaire dans la mémoire de la
+  page et l’envoie dans un en-tête; rien n’est stocké dans des témoins, `localStorage` ni
+  `sessionStorage`, et WordPress ne dépose aucun témoin pour ce module. (Un ancien témoin n’existe que si le
+  serveur de clavardage fonctionne avec `WEB_SESSION_COOKIE=true`, pour les modules antérieurs à 0.5.0.)
+  Le clavardage fonctionne donc quels que soient les réglages de témoins du navigateur.

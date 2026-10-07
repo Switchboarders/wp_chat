@@ -2,6 +2,14 @@
 
 # Changelog
 
+## 0.5.0
+- **No more cookie.** The widget keeps a session token in its own memory and sends it in an `Authorization`
+  header; the live stream uses `fetch` streaming instead of `EventSource`. The chat now works in browsers that
+  block third-party cookies (Samsung Internet, Safari, Firefox strict mode) whatever the domain of the chat server.
+- Closing the page ends the chat (end beacon); reconnects automatically if the stream drops; a `401` ends the chat.
+- Falls back to cookies + `EventSource` with a chat server older than the token mode.
+- Requires switchboard-chat with token sessions for the best behavior (it also works with older servers).
+
 ## 0.4.0
 - Removed the "Quick exit" button and its "Quick exit URL" setting (a leftover saved value is deleted
   automatically).

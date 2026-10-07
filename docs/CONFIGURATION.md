@@ -80,5 +80,7 @@ Elements: `.wpc-bubble`, `.wpc-window`, `.wpc-head`, `.wpc-body`, `.wpc-msg` (`.
 - **Multisite:** activate and configure per site.
 - **Accessibility:** the window is a labeled dialog, new messages are announced through an
   `aria-live` region, and everything works from the keyboard.
-- **Cookies:** the *chat server* sets the one cookie (`wpchat`); WordPress sets none for this plugin.
-  It only keeps the conversation going; many policies treat that as strictly necessary, but decide this with whoever is responsible for privacy.
+- **Cookies:** none. The chat keeps a temporary session token in the page's memory and sends it in a
+  header; nothing is stored in cookies, `localStorage` or `sessionStorage`, and WordPress sets no cookie
+  for this plugin. (A legacy cookie exists only if the chat server runs with `WEB_SESSION_COOKIE=true`
+  for widgets older than 0.5.0.) The chat therefore works whatever the browser's cookie settings are.

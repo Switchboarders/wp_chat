@@ -2,6 +2,16 @@
 
 # Historique des versions
 
+## 0.5.0
+- **Plus de témoin.** Le module garde un jeton de session dans sa propre mémoire et l’envoie dans un en-tête
+  `Authorization`; le flux en direct utilise la diffusion `fetch` au lieu d’`EventSource`. Le clavardage
+  fonctionne maintenant dans les navigateurs qui bloquent les témoins tiers (Samsung Internet, Safari, Firefox
+  en mode strict), quel que soit le domaine du serveur de clavardage.
+- Fermer la page met fin au clavardage (avis de fermeture); reconnexion automatique si le flux est coupé; un
+  `401` met fin au clavardage.
+- Se rabat sur les témoins + `EventSource` avec un serveur de clavardage antérieur au mode par jeton.
+- Pour un comportement optimal, exige switchboard-chat avec sessions par jeton (fonctionne aussi avec les anciens serveurs).
+
 ## 0.4.0
 - Retrait du bouton « Sortie rapide » et de son réglage « URL de la sortie rapide » (une valeur résiduelle
   enregistrée est supprimée automatiquement).

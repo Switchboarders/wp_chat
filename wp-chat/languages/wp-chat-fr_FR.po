@@ -61,8 +61,8 @@ msgstr "Parler à quelqu’un"
 msgid "The chat has ended and your conversation was deleted."
 msgstr "Le clavardage est terminé et votre conversation a été supprimée."
 
-msgid "The chat widget connects your browser directly to our messaging server. This website does not store the content of your conversation. The messaging server sets one cookie holding a random identifier so your conversation can continue; the conversation and the identifier are deleted when you end the chat or after a period of inactivity."
-msgstr "Le clavardage relie votre navigateur directement à notre serveur de messagerie. Ce site Web ne conserve pas le contenu de votre conversation. Le serveur de messagerie dépose un témoin (cookie) contenant un identifiant aléatoire afin que votre conversation puisse se poursuivre; la conversation et l’identifiant sont supprimés lorsque vous terminez le clavardage ou après une période d’inactivité."
+msgid "The chat widget connects your browser directly to our messaging server. This website does not store the content of your conversation. The messaging server gives your browser a temporary random identifier, kept only in the open page (no cookie is used), so your conversation can continue; the conversation and the identifier are deleted when you end the chat, close the page, or after a period of inactivity."
+msgstr "Le clavardage relie votre navigateur directement à notre serveur de messagerie. Ce site Web ne conserve pas le contenu de votre conversation. Le serveur de messagerie remet à votre navigateur un identifiant aléatoire temporaire, gardé seulement dans la page ouverte (aucun témoin n’est utilisé), afin que votre conversation puisse se poursuivre; la conversation et l’identifiant sont supprimés lorsque vous terminez le clavardage, fermez la page ou après une période d’inactivité."
 
 msgid "This chat is confidential. We do not keep your messages on this website."
 msgstr "Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur ce site Web."

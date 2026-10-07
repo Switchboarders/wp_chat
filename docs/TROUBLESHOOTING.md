@@ -16,7 +16,7 @@ Then work through the table, and use the browser's developer tools (F12) for the
 | **"Test the chat server" says it cannot reach the server** | Same causes. HTTPS must be valid (an expired or self-signed certificate is refused by browsers). |
 | **Visitor can send, replies never appear** | A proxy in front of the chat server buffers the live stream. Follow the streaming test in the server's `docs/reverse-proxy.md`. Also check the respondent actually answered in the right room. |
 | **"No respondent available" / error 503** | No active respondent on the server's `WEB_CALL_CENTER_ID`, or the server is not configured. |
-| **Works in Chrome, not Safari / Firefox strict** | The cookie is blocked as third-party. Serve the chat from a **sub-domain of the website's domain** (website `www.example.org`, chat `chat.example.org`). |
+| **"Connection problem" right after the first message** | The server answered `401`: it does not accept the session token. Either the chat server is older than widget 0.5.0 and the browser blocks its cookie (update the server), or the chat already ended / expired / the server restarted. See "Reading the browser's Network tab". |
 | **Works for a while then "Connection problem"** | The chat expired (idle timeout) or the server restarted: web chats live in memory. Start a new chat. |
 | **Many visitors get "rate limited"** | The server sees the proxy's address for everyone: the proxy must forward `X-Forwarded-For` (server docs). |
 | **Button hidden behind a cookie banner or another widget** | Move it with CSS (see CONFIGURATION.md, "Appearance"). |
@@ -32,12 +32,13 @@ accept the notice and send a message. Look at the requests to the chat server:
 
 | Request | Healthy | If not |
 |---|---|---|
-| `session` (POST) | `200`, response header `set-cookie: wpchat=…` | `403 origin_not_allowed`: origin missing from `WEB_ALLOWED_ORIGINS`. `503`: server not configured or no respondent. `(blocked)` / CORS error in the console: wrong address, no HTTPS, or the origin is not allowed. |
-| `message` (POST) | `200` | `401`: the cookie was not sent back (blocked as third-party, see above). `429`: rate limit. |
-| `stream` (GET, type `eventsource`) | stays **pending** (open) and shows incoming messages | `401`: cookie not sent. Ends immediately: a proxy or firewall cuts it. Shows nothing when a reply is sent: buffering. |
+| `session` (POST) | `200`, JSON body with a `token` | `403 origin_not_allowed`: origin missing from `WEB_ALLOWED_ORIGINS`. `503`: server not configured or no respondent. `(blocked)` / CORS error in the console: wrong address, no HTTPS, or the origin is not allowed. |
+| `message` (POST) | `200` | `401`: no valid token (the chat ended, expired or the server restarted), or a server too old for this widget (upgrade it). `429`: rate limit. |
+| `stream` (GET, type `fetch`) | stays **pending** (open) and shows incoming messages | `401`: no valid token. Ends immediately: a proxy or firewall cuts it. Shows nothing when a reply is sent: buffering. |
 
-Cookies: Application → Cookies → the **chat server's** domain should list `wpchat` after step one.
-A greyed-out or missing cookie with a warning icon means it was blocked.
+Token: the `message` and `stream` requests must carry a request header `authorization: Bearer …`. If it
+is missing, the `session` answer had no `token` (a chat server older than widget 0.5.0, which then works
+with cookies; some browsers block them).
 
 ## Still stuck?
 

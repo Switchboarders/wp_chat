@@ -1,13 +1,41 @@
 /* WP Chat widget. Talks directly to the switchboard-chat backend; nothing is stored locally.
  *
- * Backend contract (all calls use credentials:'include'; the session cookie is set by the backend):
- *   POST /web/session  -> 200 {}                      create session
- *   POST /web/message  {text}  -> 200 {}              visitor message
+ * Backend contract. The session token returned by /web/session lives in this script's memory only
+ * and is sent as `Authorization: Bearer <token>` (no cookie, so browsers that block third-party
+ * cookies work). A server older than switchboard-chat's token mode returns no token and sets a
+ * cookie instead: the widget then falls back to cookies + EventSource.
+ *   POST /web/session  -> 200 {"resumed":false,"token":"…"}   create session
+ *   POST /web/message  {text}  -> 200 {}                       visitor message
  *   GET  /web/stream   -> SSE events: message {text}, typing {}, closed {}
- *   POST /web/end      -> 200 {}                      end chat and delete
+ *   POST /web/end      -> 200 {}                               end chat and delete
  */
 (function () {
 	'use strict';
+
+	// Incremental parser of a text/event-stream: feed(chunk) calls onEvent(name, data) per event.
+	function createSseParser(onEvent) {
+		var buf = '', evt = 'message', data = '';
+		return function (chunk) {
+			buf += chunk;
+			var lines = buf.split('\n');
+			buf = lines.pop();
+			for (var i = 0; i < lines.length; i++) {
+				var line = lines[i].replace(/\r$/, '');
+				if (line === '') {
+					if (data !== '') { onEvent(evt, data); }
+					evt = 'message'; data = '';
+				} else if (line.charAt(0) !== ':') { // ":" lines are keep-alive comments
+					var idx = line.indexOf(':');
+					var field = idx < 0 ? line : line.slice(0, idx);
+					var value = idx < 0 ? '' : line.slice(idx + 1).replace(/^ /, '');
+					if (field === 'event') { evt = value; }
+					else if (field === 'data') { data += (data !== '' ? '\n' : '') + value; }
+				}
+			}
+		};
+	}
+	window.WPChat = window.WPChat || {};
+	window.WPChat.createSseParser = createSseParser;
 	var cfg = window.WPChatConfig;
 	var root = document.getElementById('wp-chat-root');
 	if (!cfg || !root) { return; }
@@ -33,6 +61,7 @@
 	if (cfg.custom && cfg.custom.retention) { t.retention = cfg.custom.retention; }
 	root.lang = lang;
 	var es = null, started = false, typingTimer = null;
+	var token = null, ctrl = null, retries = 0;
 
 	function el(tag, cls, text) {
 		var e = document.createElement(tag);
@@ -42,12 +71,19 @@
 	}
 
 	function api(path, body) {
+		var headers = { 'Content-Type': 'application/json' };
+		if (token) { headers.Authorization = 'Bearer ' + token; }
 		return fetch(cfg.backend + path, {
 			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
+			// With a token no cookie is involved; without one (starting a session, or an older
+			// server) the cookie fallback needs credentials.
+			credentials: token ? 'omit' : 'include',
+			headers: headers,
 			body: JSON.stringify(body || {})
-		}).then(function (r) { if (!r.ok) { throw new Error(r.status); } });
+		}).then(function (r) {
+			if (!r.ok) { throw new Error(r.status); }
+			return r.json().catch(function () { return {}; });
+		});
 	}
 
 	root.style.setProperty('--wpc-color', cfg.color);
@@ -106,17 +142,67 @@
 		if (open && started) { input.focus(); }
 	}
 
-	function closeStream() { if (es) { es.close(); es = null; } }
+	function closeStream() {
+		if (es) { es.close(); es = null; }
+		if (ctrl) { ctrl.abort(); ctrl = null; }
+	}
 
 	function finish() {
 		closeStream();
 		started = false;
+		token = null;
 		form.hidden = true;
 		btnEnd.hidden = true;
 		notice(t.ended);
 	}
 
+	function onServerEvent(name, data) {
+		if (name === 'message') {
+			typing.hidden = true;
+			try { addMsg(JSON.parse(data).text, false); } catch (e) { /* ignore malformed */ }
+		} else if (name === 'typing') {
+			typing.textContent = t.agentName + ' ' + t.typing;
+			typing.hidden = false;
+			clearTimeout(typingTimer);
+			typingTimer = setTimeout(function () { typing.hidden = true; }, 4000);
+		} else if (name === 'closed') {
+			finish();
+		}
+	}
+
+	// Live replies with fetch streaming, so the Authorization header can be sent (EventSource cannot).
 	function openStream() {
+		if (!token) { openLegacyStream(); return; }
+		var gone = {};
+		var mine = ctrl = new AbortController();
+		fetch(cfg.backend + '/web/stream', {
+			headers: { Authorization: 'Bearer ' + token, Accept: 'text/event-stream' },
+			credentials: 'omit',
+			signal: mine.signal
+		}).then(function (r) {
+			if (r.status === 401) { throw gone; } // the chat ended or expired
+			if (!r.ok || !r.body) { throw new Error('stream ' + r.status); }
+			retries = 0;
+			var reader = r.body.getReader(), decoder = new TextDecoder(), feed = createSseParser(onServerEvent);
+			return (function pump() {
+				return reader.read().then(function (x) {
+					if (x.done) { throw new Error('stream ended'); }
+					feed(decoder.decode(x.value, { stream: true }));
+					return pump();
+				});
+			})();
+		}).catch(function (e) {
+			if (!started || mine.signal.aborted) { return; }
+			if (e === gone) { finish(); return; }
+			retries++;
+			if (retries === 3) { notice(t.error); }
+			setTimeout(function () { if (started && ctrl === mine) { openStream(); } },
+				Math.min(1000 * Math.pow(2, retries - 1), 15000));
+		});
+	}
+
+	// Older servers (cookie sessions): EventSource reconnects by itself.
+	function openLegacyStream() {
 		es = new EventSource(cfg.backend + '/web/stream', { withCredentials: true });
 		es.addEventListener('message', function (ev) {
 			typing.hidden = true;
@@ -134,7 +220,8 @@
 
 	btnStart.addEventListener('click', function () {
 		btnStart.disabled = true;
-		api('/web/session').then(function () {
+		api('/web/session').then(function (j) {
+			token = (j && j.token) || null;
 			started = true;
 			consent.hidden = true; log.hidden = false; form.hidden = false; btnEnd.hidden = false;
 			openStream();
@@ -152,11 +239,23 @@
 		if (!text) { return; }
 		input.value = '';
 		addMsg(text, true);
-		api('/web/message', { text: text }).catch(function () { notice(t.error); });
+		api('/web/message', { text: text }).catch(function (e) {
+			// 401: the chat ended or expired (or the page came back from the browser's back/forward cache)
+			if (String(e && e.message) === '401') { finish(); } else { notice(t.error); }
+		});
 	});
 
 	btnEnd.addEventListener('click', function () {
 		api('/web/end').then(finish, finish);
+	});
+	// Leaving the page ends the chat: the token only lives in this page, so nobody could come back to it
+	window.addEventListener('pagehide', function () {
+		if (started && token && navigator.sendBeacon) {
+			try {
+				navigator.sendBeacon(cfg.backend + '/web/end',
+					new Blob([JSON.stringify({ token: token })], { type: 'text/plain' }));
+			} catch (e) { /* best effort: the server also ends chats whose visitor disappeared */ }
+		}
 	});
 	btnMin.addEventListener('click', function () { toggle(false); });
 	bubble.addEventListener('click', function () { toggle(true); });

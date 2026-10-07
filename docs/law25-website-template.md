@@ -37,7 +37,7 @@ French. If your site is bilingual, publish both.
 |---|---|---|
 | What the visitor must give | Nothing: no name, email or phone number is requested | – |
 | Message content | Travels browser → chat server (in memory) → an **end-to-end encrypted** Matrix room read by volunteers. Never written to disk or logs by the chat server. **The website (WordPress) never receives it.** | – |
-| Identifier | One cookie `wpchat`: random value, set by the chat server, `HttpOnly; Secure; SameSite=None`. Only its hash is kept, in the server's memory. | cookie lifetime = idle timeout |
+| Identifier | A random session token held in the widget's memory only: **no cookie, no browser storage**. Sent in a request header; only its hash is kept, in the server's memory. (If you enabled `WEB_SESSION_COOKIE` for widgets older than 0.5.0, describe that cookie too.) | idle timeout; page closed |
 | IP address | Kept in the chat server's **memory** for at most one hour (abuse limits). Not written by the chat server. **Your reverse proxy and web host may log it** (access logs). | log retention of your proxy / host: **you set it** |
 | End of a conversation | Visitor presses **End chat**, or a volunteer types `!fin` / `!end`, or the idle timeout passes. The chat server leaves and forgets the room and deletes its record. | `WEB_IDLE_TIMEOUT_MIN` (default 1440 min = 24 h) and the plugin's *Retention sentence* |
 | Who can read a new conversation | **Every active respondent** of the call center is invited to the new room and can read it until one of them types `!ok` (private room: the others are removed). Say so in the policy. | respondents list of the call center (`WEB_CALL_CENTER_ID`) |
@@ -80,8 +80,8 @@ SMS block if you do not offer SMS.*
 >
 > **What we collect.**
 > - The messages you write in the chat and the replies you receive.
-> - A random identifier, stored in a cookie named `wpchat`, so that your conversation can continue
->   while you chat. It contains no information about you.
+> - A random identifier, kept only in the memory of the open chat page (no cookie is used), so that
+>   your conversation can continue while you chat. It contains no information about you.
 > - Your IP address, held briefly in the memory of our chat server to limit abuse, and recorded in the
 >   technical logs of our servers for `[X days]`.
 >
@@ -102,7 +102,8 @@ SMS block if you do not offer SMS.*
 > read the conversations. Our volunteers are bound by a written confidentiality commitment.
 >
 > **How long we keep it.** Your conversation is deleted when you press **End chat**, when the
-> volunteer ends it, or after `[24 hours]` of inactivity, at which point the cookie also expires.
+> volunteer ends it, when you close the page, or after `[24 hours]` of inactivity; the identifier is
+> discarded at the same time.
 > The volunteers who took part must delete their copy of the conversation `[and our messaging server
 > removes old messages after X days]`. Technical logs are kept `[X days]`.
 >
@@ -125,11 +126,11 @@ SMS block if you do not offer SMS.*
 > **On a shared or public device.** Press **End chat** and close the tab when you are done. The
 > conversation is not kept on this website, but it remains visible on your screen until you do.
 >
-> *Cookie used by the chat:*
+> *Identifier used by the chat (no cookie):*
 >
-> | Cookie | Purpose | Set by | Lifetime |
+> | Identifier | Purpose | Kept by | Lifetime |
 > |---|---|---|---|
-> | `wpchat` | keeps your conversation going | our chat server (`[CHAT SERVER ADDRESS]`) | until you end the chat or `[24 hours]` of inactivity |
+> | session token | keeps your conversation going | the open chat page (memory only) and our chat server (`[CHAT SERVER ADDRESS]`, hash only) | until you end the chat, close the page or `[24 hours]` of inactivity |
 >
 > **SMS line** *(delete if not offered).* If you text our number `[SMS NUMBER]`, we receive your
 > phone number and your messages through `[SMS PROVIDER]` and your mobile carrier, which keep their own
@@ -168,7 +169,7 @@ duty may see a new conversation until one takes it privately (as Part A does).
 | Do I need to give my name? | No. We do not ask for any personal detail. |
 | Who can read what I write? | Only the `[VOLUNTEERS]` on duty, in a private encrypted room (until one of them takes your conversation privately, then only that volunteer). Not the website's administrators. |
 | Is it really anonymous? | We do not ask who you are and keep no history. Your internet provider and the network you use can still see that you connected to this site; use a private network if that matters. |
-| Is anything saved on my device? | One cookie that keeps your conversation going. It is removed when the chat ends. |
+| Is anything saved on my device? | No cookie and nothing in the browser's storage: a temporary identifier lives in the open chat page only and disappears when you close it. |
 | Can I get my conversation back? | No: it is deleted when it ends, so nobody can retrieve it later. |
 | How do I stop? | Press **End chat**. The conversation is deleted and the volunteer is told. |
 | I wrote something I regret. | End the chat; it is deleted. You can also ask the volunteer to end it. |
@@ -254,7 +255,7 @@ Pre-filled with the facts of WP Chat; complete the bracketed parts.
 | Volunteer keeps or shares a conversation | `[ ]` | commitment, training, deletion procedure | `[audit, remove access]` |
 | Interception in transit | `[ ]` | HTTPS; encrypted rooms | – |
 | Unauthorized access to the servers | `[ ]` | restricted access, secrets outside the code, encrypted fields | `[2FA, monitoring]` |
-| Cookie blocked or misused | `[ ]` | random value, HttpOnly, Secure, short life | – |
+| Session token stolen or reused | `[ ]` | random value, memory only, HTTPS, short life, chat ends when the page closes | `[keep WordPress and plugins updated]` |
 | Sensitive content exposed by an incident | `[ ]` | register + notification procedure | `[exercise the procedure yearly]` |
 
 ## 9. Alignment checklist (before going live and at every change)
