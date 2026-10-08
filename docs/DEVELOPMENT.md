@@ -46,6 +46,10 @@ node tests/widget-flow.test.js           # real fetch streaming against a mock c
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
 
+`tests/widget-e2e-driver.js` runs the real widget against a real switchboard-chat server. It is driven by the
+bridge repository's end-to-end suite (`tests/e2e/run.py`, scenario `widget`), which sets up a throwaway Synapse and simulated
+respondents; it is not a standalone test.
+
 `widget-language.test.js` runs `assets/chat.js` in a sandbox with a fake document and checks the
 language chosen for different browser language lists, site languages and forced modes.
 

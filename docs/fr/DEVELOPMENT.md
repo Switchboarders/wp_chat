@@ -46,6 +46,10 @@ node tests/widget-flow.test.js           # vraie diffusion fetch face à un faux
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
 
+`tests/widget-e2e-driver.js` exécute le vrai module du site face à un vrai serveur switchboard-chat. Il est piloté par la
+suite de bout en bout du dépôt de la passerelle (`tests/e2e/run.py`, scénario `widget`), qui monte un Synapse jetable et des
+répondants simulés; ce n'est pas un test autonome.
+
 `widget-language.test.js` exécute `assets/chat.js` dans un bac à sable avec un faux document et vérifie la
 langue choisie pour différentes listes de langues du navigateur, langues du site et modes imposés.
 
