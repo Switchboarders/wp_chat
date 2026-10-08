@@ -15,7 +15,8 @@ and why not, and **Test the chat server** checks the connection from your browse
 | Accent color | `color` | `#2b6cb0` | Hex color of the bubble, header, buttons and visitor messages. |
 | Privacy policy URL | `privacy_url` | empty | Link shown in the consent notice. |
 | Person responsible for privacy | `privacy_officer` | empty | Name shown in the consent notice ("Privacy contact: …"). |
-| Retention sentence | `retention_text` | "Your conversation is deleted when you end the chat or after 24 hours of inactivity." | Shown before the visitor starts. **Keep it equal to the server's `WEB_IDLE_TIMEOUT_MIN`.** |
+| Retention sentence | `retention_text` | "Your conversation is deleted when you end the chat or after 48 hours of inactivity." | Shown before the visitor starts. **Keep it equal to the server's `WEB_IDLE_TIMEOUT_MIN` (48 h = 2880).** |
+| Keep the chat open across pages | `remember` | `tab` | `tab`: the chat survives a reload and other pages of the site, in this browser tab only (forgotten when the tab is closed; best for shared computers). `browser`: kept in the whole browser (also in new tabs and after a restart) until the chat ends or 48 h without activity. Only an anonymous session code is kept in the browser, never the messages. |
 | Extra text when the chat is unavailable | `unavailable_text` | empty | Up to 300 characters shown under the message when a visitor cannot be served (blocked connection, nobody available, server busy): put another way to get help, for example a phone number. |
 | Widget language | `language_mode` | `auto` | See "Language". |
 | Show the chat on | `display_mode`, `page_ids`, `include_posts` | all pages | See "Where the chat appears". |
@@ -82,7 +83,8 @@ Elements: `.wpc-bubble`, `.wpc-window`, `.wpc-head`, `.wpc-body`, `.wpc-msg` (`.
 - **Accessibility:** the window is a labeled dialog, new messages are announced through an
   `aria-live` region, and everything works from the keyboard.
 - **Cookies:** none. The chat keeps a temporary session token in the page's memory and sends it in a
-  header; nothing is stored in cookies, `localStorage` or `sessionStorage` (one exception: a small "blocked
-  until" marker in `localStorage`, written only for a visitor a respondent has blocked), and WordPress sets no
+  header; nothing is stored in cookies. The browser keeps the session code in `sessionStorage` (or `localStorage`
+  with the "whole browser" option) so a reload keeps the chat, plus a small "blocked until" marker in
+  `localStorage` for a visitor a respondent has blocked, and WordPress sets no
   cookie for this plugin. (A legacy cookie exists only if the chat server runs with `WEB_SESSION_COOKIE=true`
   for widgets older than 0.5.0.) The chat therefore works whatever the browser's cookie settings are.

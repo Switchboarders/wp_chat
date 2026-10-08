@@ -15,7 +15,8 @@ pourquoi; **Tester le serveur de clavardage** vérifie la connexion depuis votre
 | Couleur d’accent | `color` | `#2b6cb0` | Couleur hexadécimale de la bulle, de l’en-tête, des boutons et des messages du visiteur. |
 | URL de la politique de confidentialité | `privacy_url` | vide | Lien affiché dans l’avis de consentement. |
 | Personne responsable de la protection des renseignements personnels | `privacy_officer` | vide | Nom affiché dans l’avis de consentement (« Responsable de la vie privée : … »). |
-| Phrase sur la conservation | `retention_text` | « Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité. » | Affichée avant que le visiteur commence. **Gardez-la conforme au `WEB_IDLE_TIMEOUT_MIN` du serveur.** |
+| Phrase sur la conservation | `retention_text` | « Votre conversation est supprimée lorsque vous terminez le clavardage ou après 48 heures d’inactivité. » | Affichée avant que le visiteur commence. **Gardez-la conforme au `WEB_IDLE_TIMEOUT_MIN` du serveur (48 h = 2880).** |
+| Garder le clavardage ouvert d’une page à l’autre | `remember` | `tab` | `tab` : le clavardage survit au rechargement et aux autres pages du site, dans cet onglet seulement (oublié à la fermeture de l’onglet; idéal pour les ordinateurs partagés). `browser` : gardé dans tout le navigateur (aussi dans de nouveaux onglets et après un redémarrage) jusqu’à la fin du clavardage ou 48 h sans activité. Seul un code de session anonyme est gardé dans le navigateur, jamais les messages. |
 | Texte additionnel quand le clavardage est indisponible | `unavailable_text` | vide | Jusqu’à 300 caractères affichés sous le message quand un visiteur ne peut pas être servi (connexion bloquée, personne de disponible, serveur occupé) : indiquez un autre moyen d’obtenir de l’aide, par exemple un numéro de téléphone. |
 | Langue du clavardage | `language_mode` | `auto` | Voir « Langue ». |
 | Afficher le clavardage sur | `display_mode`, `page_ids`, `include_posts` | toutes les pages | Voir « Où le clavardage apparaît ». |
@@ -87,8 +88,8 @@ Points d’accroche utiles :
 - **Accessibilité :** la fenêtre est une boîte de dialogue étiquetée, les nouveaux messages sont annoncés
   par une région `aria-live`, et tout fonctionne au clavier.
 - **Témoins (cookies) :** aucun. Le clavardage garde un jeton de session temporaire dans la mémoire de la
-  page et l’envoie dans un en-tête; rien n’est stocké dans des témoins, `localStorage` ni
-  `sessionStorage` (une exception : un petit marqueur « bloqué jusqu’à » dans le `localStorage`, écrit seulement
-  pour un visiteur qu’un répondant a bloqué), et WordPress ne dépose aucun témoin pour ce module. (Un ancien témoin n’existe que si le
+  page et l’envoie dans un en-tête; rien n’est stocké dans des témoins. Le navigateur garde le code de session dans le `sessionStorage`
+  (ou le `localStorage` avec l’option « tout le navigateur ») pour qu’un rechargement conserve le clavardage, plus un petit
+  marqueur « bloqué jusqu’à » dans le `localStorage` pour un visiteur qu’un répondant a bloqué, et WordPress ne dépose aucun témoin pour ce module. (Un ancien témoin n’existe que si le
   serveur de clavardage fonctionne avec `WEB_SESSION_COOKIE=true`, pour les modules antérieurs à 0.5.0.)
   Le clavardage fonctionne donc quels que soient les réglages de témoins du navigateur.

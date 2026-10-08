@@ -40,9 +40,9 @@ textes destinés aux visiteurs en français. Si votre site est bilingue, publiez
 |---|---|---|
 | Ce que le visiteur doit fournir | Rien : aucun nom, courriel ni numéro de téléphone n’est demandé | – |
 | Contenu des messages | Circule du navigateur au serveur de clavardage (en mémoire), puis dans une salle Matrix **chiffrée de bout en bout** lue par les bénévoles. Jamais écrit sur disque ni dans les journaux par le serveur de clavardage. **Le site Web (WordPress) ne le reçoit jamais.** | – |
-| Identifiant | Un jeton de session aléatoire gardé seulement dans la mémoire du module : **aucun témoin, aucun stockage du navigateur**. Envoyé dans un en-tête de requête; seule son empreinte est conservée, dans la mémoire du serveur. (Si vous avez activé `WEB_SESSION_COOKIE` pour des modules antérieurs à 0.5.0, décrivez aussi ce témoin.) | délai d’inactivité; page fermée |
+| Identifiant | Un jeton de session aléatoire gardé dans le navigateur du visiteur (`sessionStorage` pour cet onglet, ou `localStorage` si vous choisissez « tout le navigateur ») : **aucun témoin**. Envoyé dans un en-tête de requête; seule son empreinte est conservée, dans la mémoire du serveur. (Si vous avez activé `WEB_SESSION_COOKIE` pour des modules antérieurs à 0.5.0, décrivez aussi ce témoin.) | fin du clavardage; `[48 heures]` sans activité |
 | Adresse IP | Gardée dans la **mémoire** du serveur de clavardage une heure au plus (limites contre les abus). Non écrite par le serveur de clavardage. **Votre proxy inverse et votre hébergeur Web peuvent l’enregistrer** (journaux d’accès). | conservation des journaux de votre proxy / hébergeur : **c’est vous qui la fixez** |
-| Fin d’une conversation | Le visiteur appuie sur **Terminer**, ou un bénévole écrit `!fin` / `!end`, ou le délai d’inactivité s’écoule. Le serveur de clavardage quitte et oublie la salle et supprime son enregistrement. | `WEB_IDLE_TIMEOUT_MIN` (1440 min = 24 h par défaut) et la *Phrase sur la conservation* du module |
+| Fin d’une conversation | Le visiteur appuie sur **Terminer**, ou un bénévole écrit `!fin` / `!end`, ou `[48 heures]` s’écoulent sans activité. Le serveur de clavardage retire tout le monde de la salle, la quitte et l’oublie (elle disparaît des applications des bénévoles) et supprime son enregistrement. | `WEB_IDLE_TIMEOUT_MIN` (2880 min = 48 h par défaut) et la *Phrase sur la conservation* du module |
 | Qui peut lire une nouvelle conversation | **Chaque répondant actif** du centre d’appels est invité dans la nouvelle salle et peut la lire jusqu’à ce que l’un d’eux écrive `!ok` (salle privée : les autres sont retirés). Dites-le dans la politique. | liste des répondants du centre d’appels (`WEB_CALL_CENTER_ID`) |
 | Copies gardées par les bénévoles | Les clients Matrix des bénévoles conservent leur propre copie jusqu’à ce qu’ils suppriment la salle (on le leur demande). | engagement des bénévoles (partie E); politique de conservation facultative du serveur Matrix |
 | Redémarrage du serveur de clavardage | Met fin à tous les clavardages ouverts (les sessions sont en mémoire). | – |
@@ -63,7 +63,7 @@ textes destinés aux visiteurs en français. Si votre site est bilingue, publiez
 | Coordonnées pour les demandes en matière de vie privée (courriel, adresse postale, téléphone) | `[COURRIEL]`, `[ADRESSE POSTALE]`, `[TÉLÉPHONE]` |
 | Finalité du clavardage (une phrase) | `[FINALITÉ, p. ex. « permettre à une personne de parler anonymement avec un bénévole de son rétablissement d’une dépendance »]` |
 | Qui répond | `[QUI RÉPOND, p. ex. « des bénévoles formés de notre fraternité »]` |
-| Délai d’inactivité (doit égaler `WEB_IDLE_TIMEOUT_MIN`) | `[24 heures]` |
+| Délai d’inactivité (doit égaler `WEB_IDLE_TIMEOUT_MIN`) | `[48 heures]` |
 | Journaux d’accès des serveurs conservés pendant | `[X jours]` |
 | Hébergement : WordPress / serveur de clavardage / serveur Matrix (entreprise et pays) | `[ENTREPRISES D’HÉBERGEMENT ET PAYS]` |
 | Exploitant du serveur Matrix | `[EXPLOITANT MATRIX]` |
@@ -114,7 +114,7 @@ s’appliquent pas, ainsi que le bloc SMS si vous n’offrez pas les SMS.*
 > confidentialité écrit.
 >
 > **Combien de temps nous les conservons.** Votre conversation est supprimée quand vous appuyez sur
-> **Terminer**, quand le bénévole y met fin, quand vous fermez la page, ou après `[24 heures]` d’inactivité; l’identifiant
+> **Terminer**, quand le bénévole y met fin, ou après `[48 heures]` sans aucune activité (fermer ou recharger la page n’y met pas fin); l’identifiant
 > est alors supprimé aussi. Les bénévoles qui ont participé doivent supprimer leur copie de la conversation `[et notre serveur
 > de messagerie retire les vieux messages après X jours]`. Les journaux techniques sont conservés
 > `[X jours]`. L’empreinte d’une connexion bloquée est supprimée à la fin du blocage.
@@ -145,7 +145,7 @@ s’appliquent pas, ainsi que le bloc SMS si vous n’offrez pas les SMS.*
 >
 > | Identifiant | Rôle | Conservé par | Durée de vie |
 > |---|---|---|---|
-> | jeton de session | poursuit votre conversation | la page de clavardage ouverte (mémoire seulement) et notre serveur de clavardage (`[ADRESSE DU SERVEUR DE CLAVARDAGE]`, empreinte seulement) | jusqu’à ce que vous mettiez fin au clavardage, fermiez la page ou `[24 heures]` d’inactivité |
+> | jeton de session | poursuit votre conversation | votre navigateur (cet onglet, ou tout le navigateur) et notre serveur de clavardage (`[ADRESSE DU SERVEUR DE CLAVARDAGE]`, empreinte seulement) | jusqu’à ce que vous mettiez fin au clavardage ou `[48 heures]` d’inactivité |
 >
 > **Ligne SMS** *(à supprimer si elle n’est pas offerte).* Si vous envoyez un texto à notre numéro
 > `[NUMÉRO SMS]`, nous recevons votre numéro de téléphone et vos messages par l’entremise de
@@ -167,7 +167,7 @@ avis **court, clair et conforme** à la partie A.
 | Élément | Où le régler | Formulation suggérée (à adapter) |
 |---|---|---|
 | Phrase de confidentialité | `wp-chat/languages/widget-strings.json` → `consent` | « Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur ce site Web. » *(valeur par défaut; vraie tant que WordPress ne se trouve pas dans le chemin des messages)* |
-| Phrase sur la conservation | Réglages → WP Chat → *Phrase sur la conservation* (gardez-la égale à `WEB_IDLE_TIMEOUT_MIN`) | « Votre conversation est supprimée lorsque vous terminez le clavardage ou après `[24 heures]` d’inactivité. » |
+| Phrase sur la conservation | Réglages → WP Chat → *Phrase sur la conservation* (gardez-la égale à `WEB_IDLE_TIMEOUT_MIN`) | « Votre conversation est supprimée lorsque vous terminez le clavardage ou après `[48 heures]` d’inactivité. » |
 | Personne-ressource en matière de vie privée | Réglages → WP Chat → *Personne responsable de la protection des renseignements personnels* | `[NOM DU RESPONSABLE]` |
 | Lien vers la politique de confidentialité | Réglages → WP Chat → *URL de la politique de confidentialité* | `[URL DE LA PARTIE A]` |
 | Bouton de départ | `widget-strings.json` → `start` | « J’ai compris, commencer à clavarder » |
@@ -264,7 +264,7 @@ Québec *(à vérifier)*. Pré-remplie avec les faits de WP Chat; complétez les
 | 3. Nécessité et proportionnalité | Le contenu des messages est nécessaire pour tenir la conversation. L’identifiant est nécessaire pour la poursuivre. L’adresse IP est nécessaire pour limiter les abus. Rien d’autre n’est recueilli. `[Justifiez et envisagez des solutions de rechange, p. ex. une ligne téléphonique.]` |
 | 4. Parties et flux | Visiteur ↔ serveur de clavardage (HTTPS) ↔ salle Matrix chiffrée ↔ bénévoles. WordPress n’est pas dans le chemin. Fournisseurs : `[ENTREPRISES D’HÉBERGEMENT]`, `[EXPLOITANT MATRIX]`, `[FOURNISSEUR SMS]`. |
 | 5. Lieux et transferts | `[OÙ SE TROUVE CHAQUE SERVEUR; transferts hors Québec et évaluation de la protection]` |
-| 6. Conservation et destruction | Web : à la fin du clavardage ou après `[24 h]`; les bénévoles suppriment leurs copies; journaux du proxy `[X jours]`; liste de blocage `[1 jour, 30 jours au plus]`. SMS : après `[7 jours]` de silence; empreinte de désabonnement conservée; sauvegardes `[COMBIEN DE TEMPS, CHIFFRÉES]`. |
+| 6. Conservation et destruction | Web : à la fin du clavardage ou après `[48 h]`; les bénévoles suppriment leurs copies; journaux du proxy `[X jours]`; liste de blocage `[1 jour, 30 jours au plus]`. SMS : après `[7 jours]` de silence; empreinte de désabonnement conservée; sauvegardes `[COMBIEN DE TEMPS, CHIFFRÉES]`. |
 | 7. Mesures de protection | HTTPS; salles chiffrées de bout en bout; texte des messages jamais sur disque ni dans les journaux; liste d’origines autorisées; limites de débit; numéros hachés/chiffrés; secrets dans l’environnement; engagement des bénévoles; procédure d’incident. |
 | 8. Risques et mesures d’atténuation | Voir le tableau ci-dessous. |
 | 9. Risques résiduels | Les appareils des bénévoles gardent des copies jusqu’à leur suppression; les fournisseurs de services mobiles conservent des enregistrements; l’appareil et le réseau du visiteur; `[AUTRES]`. |
@@ -276,7 +276,7 @@ Québec *(à vérifier)*. Pré-remplie avec les faits de WP Chat; complétez les
 | Un bénévole conserve ou partage une conversation | `[ ]` | engagement, formation, procédure de suppression | `[vérification, retrait de l’accès]` |
 | Interception en transit | `[ ]` | HTTPS; salles chiffrées | – |
 | Accès non autorisé aux serveurs | `[ ]` | accès restreint, secrets hors du code, champs chiffrés | `[2FA, surveillance]` |
-| Jeton de session volé ou réutilisé | `[ ]` | valeur aléatoire, mémoire seulement, HTTPS, courte durée, le clavardage se termine à la fermeture de la page | `[garder WordPress et les extensions à jour]` |
+| Jeton de session volé ou réutilisé | `[ ]` | valeur aléatoire, HTTPS, empreinte seulement sur le serveur, prend fin après 48 h d’inactivité ou quand le visiteur termine le clavardage | `[garder WordPress et les extensions à jour]` |
 | Contenu sensible exposé par un incident | `[ ]` | registre + procédure d’avis | `[exercer la procédure chaque année]` |
 
 ## 9. Liste de concordance (avant la mise en service et à chaque changement)

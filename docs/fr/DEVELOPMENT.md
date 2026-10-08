@@ -42,7 +42,7 @@ Tout réinitialiser : `docker compose down -v`.
 node tests/widget-language.test.js       # choix de la langue par le vrai code du module, face à une page simulée
 node tests/sse-parser.test.js            # l’analyseur de text/event-stream (blocs découpés n’importe où)
 node tests/pow.test.js                   # le SHA-256 du module et son solveur d’épreuve de calcul face au crypto de Node
-node tests/widget-flow.test.js           # vraie diffusion fetch face à un faux serveur de clavardage : en-tête du jeton, reconnexion, 401, avis de fermeture, repli vers un ancien serveur
+node tests/widget-flow.test.js           # vraie diffusion fetch face à un faux serveur de clavardage : en-tête du jeton, reconnexion, 401, restauration après rechargement, repli vers un ancien serveur
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
 

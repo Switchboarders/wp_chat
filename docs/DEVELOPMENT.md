@@ -42,7 +42,7 @@ Reset everything: `docker compose down -v`.
 node tests/widget-language.test.js       # language selection of the real widget code against a stubbed page
 node tests/sse-parser.test.js            # the text/event-stream parser (chunks split anywhere)
 node tests/pow.test.js                   # the widget's SHA-256 and proof-of-work solver against Node's crypto
-node tests/widget-flow.test.js           # real fetch streaming against a mock chat server: token header, reconnection, 401, end beacon, old-server fallback
+node tests/widget-flow.test.js           # real fetch streaming against a mock chat server: token header, reconnection, 401, reload restore, old-server fallback
 for f in wp-chat/*.php wp-chat/includes/*.php; do php -l "$f"; done
 ```
 

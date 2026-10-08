@@ -10,9 +10,10 @@ function wp_chat_defaults() {
 		'color'         => '#2b6cb0',
 		'privacy_url'   => '',
 		'privacy_officer' => '',
-		'retention_text' => __( 'Your conversation is deleted when you end the chat or after 24 hours of inactivity.', 'wp-chat' ),
+		'retention_text' => __( 'Your conversation is deleted when you end the chat or after 48 hours of inactivity.', 'wp-chat' ),
 		'language_mode' => 'auto', // 'auto' (visitor's browser), 'site', 'fr' or 'en'
 		'unavailable_text' => '',
+		'remember'      => 'tab', // 'tab' (this tab only) or 'browser' (until the inactivity limit)
 		'display_mode'  => 'all', // 'all' or 'selected'
 		'page_ids'      => array(),
 		'include_posts' => 0,
@@ -51,6 +52,7 @@ function wp_chat_sanitize( $in ) {
 		'retention_text'  => sanitize_text_field( $in['retention_text'] ?? $d['retention_text'] ),
 		'unavailable_text' => mb_substr( sanitize_text_field( $in['unavailable_text'] ?? '' ), 0, 300 ),
 		'language_mode'   => in_array( $in['language_mode'] ?? '', array( 'auto', 'site', 'fr', 'en' ), true ) ? $in['language_mode'] : 'auto',
+		'remember'        => ( 'browser' === ( $in['remember'] ?? '' ) ) ? 'browser' : 'tab',
 		'display_mode'    => ( 'selected' === ( $in['display_mode'] ?? '' ) ) ? 'selected' : 'all',
 		'page_ids'        => array_values( array_unique( $page_ids ) ),
 		'include_posts'   => empty( $in['include_posts'] ) ? 0 : 1,
@@ -150,6 +152,18 @@ function wp_chat_settings_page() {
 		printf( '<option value="%s" %s>%s</option>', esc_attr( $value ), selected( $o['language_mode'], $value, false ), esc_html( $label ) );
 	}
 	echo '</select><p class="description">' . esc_html__( 'The respondent name and retention sentence you customize are shown as typed in every language. Leave them at their defaults to have them translated.', 'wp-chat' ) . '</p></td></tr>';
+
+	// How long a visitor stays connected across pages
+	echo '<tr><th><label for="remember">' . esc_html__( 'Keep the chat open across pages', 'wp-chat' ) . '</label></th><td>';
+	echo '<select id="remember" name="wp_chat_options[remember]">';
+	$remember = array(
+		'tab'     => __( 'In this browser tab only (forgotten when the tab is closed)', 'wp-chat' ),
+		'browser' => __( 'In the whole browser (until the chat ends or 48 hours of inactivity)', 'wp-chat' ),
+	);
+	foreach ( $remember as $value => $label ) {
+		printf( '<option value="%s" %s>%s</option>', esc_attr( $value ), selected( $o['remember'], $value, false ), esc_html( $label ) );
+	}
+	echo '</select><p class="description">' . esc_html__( 'The chat survives a page reload and a move to another page of your site. The visitor’s browser keeps only an anonymous session code, never the messages. Choose “this tab only” for visitors who may use a shared computer.', 'wp-chat' ) . '</p></td></tr>';
 
 	// Where the chat is displayed
 	echo '<tr><th>' . esc_html__( 'Show the chat on', 'wp-chat' ) . '</th><td>';

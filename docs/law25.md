@@ -15,8 +15,8 @@ notices and the privacy impact assessment (PIA) before launch.
 
 | Data | Where | Form | Kept until |
 |---|---|---|---|
-| Web chat message text | Browser ↔ switchboard-chat memory ↔ Matrix room | Never written to disk or logs by the bridge. Matrix room is end-to-end encrypted. | Chat ends or idle timeout (`WEB_IDLE_TIMEOUT_MIN`, default 24 h). Bridge leaves and forgets the room. |
-| Web visitor identifier | Session token in the widget's memory (never in a cookie or in browser storage), SHA-256 of it in bridge memory | Random, no link to a person | Chat end / timeout / page closed. Lost on bridge restart. |
+| Web chat message text | Browser ↔ switchboard-chat memory ↔ Matrix room | Never written to disk or logs by the bridge. Matrix room is end-to-end encrypted. | Chat ends or idle timeout (`WEB_IDLE_TIMEOUT_MIN`, default 48 h = 2880 min, counted from the last interaction). The conversation is also held in the bridge's memory (last 300 lines) so a reload can restore it, and is erased with the session. The bridge removes every respondent from the room, leaves and forgets it. |
+| Web visitor identifier | Session token in the visitor's browser (`sessionStorage`, or `localStorage` if the site chose "whole browser"; never in a cookie), SHA-256 of it in bridge memory | Random, no link to a person | Chat end / 48 h without activity. Lost on bridge restart. |
 | Block list (web, abusive visitors) | Database `web_block` | Keyed hash of the visitor's IPv4 address or IPv6 /64 network, and an end date. No reason, no content, no readable address. | Until the block expires (default 1 day, at most 30 days by `WEB_BAN_MAX_DAYS`); expired rows are deleted every minute |
 | Block marker (web, only after a block) | The blocked visitor's browser (`localStorage`, key `wpchat_blocked`) | A signed "blocked until" marker: two dates and a signature, no identifier | Until the block ends; the visitor can delete it any time |
 | Pseudo caller number (web) | Database `room` | Random number, hashed + encrypted | Deleted with the room |

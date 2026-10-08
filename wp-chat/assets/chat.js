@@ -1,12 +1,15 @@
 /* WP Chat widget. Talks directly to the switchboard-chat backend; nothing is stored locally.
  *
- * Backend contract. The session token returned by /web/session lives in this script's memory only
- * and is sent as `Authorization: Bearer <token>` (no cookie, so browsers that block third-party
+ * Backend contract. The session token returned by /web/session is kept in this script's memory and, so
+ * that a reload or another page of the site keeps the chat, in the browser's sessionStorage (this tab) or
+ * localStorage (cfg.remember === 'browser'). It is sent as `Authorization: Bearer <token>` (no cookie, so browsers that block third-party
  * cookies work). A server older than switchboard-chat's token mode returns no token and sets a
  * cookie instead: the widget then falls back to cookies + EventSource.
  *   POST /web/session  -> 200 {"resumed":false,"token":"…"}   create session
  *   POST /web/message  {text}  -> 200 {}                       visitor message
- *   GET  /web/stream   -> SSE events: message {text}, typing {}, closed {}
+ *   GET  /web/stream   -> SSE events: message {text} (with id: <seq>), typing {}, closed {};
+ *                         the Last-Event-ID header resumes after the last line already shown
+ *   GET  /web/history  -> 200 {"messages":[{seq,from:"me"|"them",text}],"last":N}   restores the window
  *   POST /web/end      -> 200 {}                               end chat and delete
  */
 (function () {
@@ -14,7 +17,7 @@
 
 	// Incremental parser of a text/event-stream: feed(chunk) calls onEvent(name, data) per event.
 	function createSseParser(onEvent) {
-		var buf = '', evt = 'message', data = '';
+		var buf = '', evt = 'message', data = '', id = '';
 		return function (chunk) {
 			buf += chunk;
 			var lines = buf.split('\n');
@@ -22,13 +25,14 @@
 			for (var i = 0; i < lines.length; i++) {
 				var line = lines[i].replace(/\r$/, '');
 				if (line === '') {
-					if (data !== '') { onEvent(evt, data); }
-					evt = 'message'; data = '';
+					if (data !== '') { onEvent(evt, data, id); }
+					evt = 'message'; data = ''; id = '';
 				} else if (line.charAt(0) !== ':') { // ":" lines are keep-alive comments
 					var idx = line.indexOf(':');
 					var field = idx < 0 ? line : line.slice(0, idx);
 					var value = idx < 0 ? '' : line.slice(idx + 1).replace(/^ /, '');
 					if (field === 'event') { evt = value; }
+					else if (field === 'id') { id = value; }
 					else if (field === 'data') { data += (data !== '' ? '\n' : '') + value; }
 				}
 			}
@@ -135,13 +139,23 @@
 	if (cfg.custom && cfg.custom.retention) { t.retention = cfg.custom.retention; }
 	root.lang = lang;
 	var es = null, started = false, typingTimer = null;
-	var token = null, ctrl = null, retries = 0;
+	var token = null, ctrl = null, retries = 0, lastSeq = 0;
 
 	function el(tag, cls, text) {
 		var e = document.createElement(tag);
 		if (cls) { e.className = cls; }
 		if (text) { e.textContent = text; }
 		return e;
+	}
+
+	function getHistory() {
+		return fetch(cfg.backend + '/web/history', {
+			headers: { Authorization: 'Bearer ' + token },
+			credentials: 'omit'
+		}).then(function (r) {
+			if (!r.ok) { var err = new Error(String(r.status)); err.status = r.status; throw err; }
+			return r.json();
+		});
 	}
 
 	function api(path, body, extraHeaders) {
@@ -168,6 +182,32 @@
 			}
 			return r.json().catch(function () { return {}; });
 		});
+	}
+
+	// The chat survives a reload or a move to another page of the site: the session token (and whether the
+	// window was open) is kept in the browser, in this tab only (sessionStorage, the default) or for the
+	// whole browser (localStorage, up to the server's inactivity limit). It is erased when the chat ends.
+	var SESSION_KEY = 'wpchat_session';
+	function store() {
+		try { return cfg.remember === 'browser' ? window.localStorage : window.sessionStorage; } catch (e) { return null; }
+	}
+	function loadSession() {
+		try {
+			var st = store();
+			var v = st && JSON.parse(st.getItem(SESSION_KEY) || 'null');
+			if (v && typeof v.token === 'string' && v.token) { return v; }
+		} catch (e) { /* storage unavailable: no restored chat */ }
+		return null;
+	}
+	function saveSession() {
+		try {
+			var st = store();
+			if (st && token) { st.setItem(SESSION_KEY, JSON.stringify({ token: token, open: !win.hidden })); }
+		} catch (e) { /* ignore */ }
+	}
+	function clearSession() {
+		try { window.sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
+		try { window.localStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
 	}
 
 	root.style.setProperty('--wpc-color', cfg.color);
@@ -254,6 +294,7 @@
 		win.hidden = !open;
 		bubble.hidden = open;
 		if (open && started) { input.focus(); }
+		if (started) { saveSession(); }
 	}
 
 	function closeStream() {
@@ -263,15 +304,22 @@
 
 	function finish() {
 		closeStream();
+		clearSession();
 		started = false;
 		token = null;
+		lastSeq = 0;
 		form.hidden = true;
 		btnEnd.hidden = true;
 		notice(t.ended);
 	}
 
-	function onServerEvent(name, data) {
+	function onServerEvent(name, data, id) {
 		if (name === 'message') {
+			var seq = parseInt(id, 10);
+			if (seq > 0) {
+				if (seq <= lastSeq) { return; } // already shown (restored history, or a reconnection replay)
+				lastSeq = seq;
+			}
 			typing.hidden = true;
 			try { addMsg(JSON.parse(data).text, false); } catch (e) { /* ignore malformed */ }
 		} else if (name === 'typing') {
@@ -281,6 +329,7 @@
 			typingTimer = setTimeout(function () { typing.hidden = true; }, 4000);
 		} else if (name === 'banned') {
 			try { var b = JSON.parse(data); saveMarker(b.until, b.marker); } catch (e) { /* ignore */ }
+			clearSession();
 			notice(t.blocked);
 			if (cfg.unavailableText) { notice(cfg.unavailableText); }
 		} else if (name === 'closed') {
@@ -294,7 +343,9 @@
 		var gone = {};
 		var mine = ctrl = new AbortController();
 		fetch(cfg.backend + '/web/stream', {
-			headers: { Authorization: 'Bearer ' + token, Accept: 'text/event-stream' },
+			headers: lastSeq > 0
+				? { Authorization: 'Bearer ' + token, Accept: 'text/event-stream', 'Last-Event-ID': String(lastSeq) }
+				: { Authorization: 'Bearer ' + token, Accept: 'text/event-stream' },
 			credentials: 'omit',
 			signal: mine.signal
 		}).then(function (r) {
@@ -345,6 +396,7 @@
 			started = true;
 			btnStart.textContent = t.start;
 			consent.hidden = true; log.hidden = false; form.hidden = false; btnEnd.hidden = false;
+			saveSession();
 			openStream();
 			input.focus();
 		}).catch(function (e) {
@@ -383,15 +435,24 @@
 	btnEnd.addEventListener('click', function () {
 		api('/web/end').then(finish, finish);
 	});
-	// Leaving the page ends the chat: the token only lives in this page, so nobody could come back to it
-	window.addEventListener('pagehide', function () {
-		if (started && token && navigator.sendBeacon) {
-			try {
-				navigator.sendBeacon(cfg.backend + '/web/end',
-					new Blob([JSON.stringify({ token: token })], { type: 'text/plain' }));
-			} catch (e) { /* best effort: the server also ends chats whose visitor disappeared */ }
-		}
-	});
 	btnMin.addEventListener('click', function () { toggle(false); });
 	bubble.addEventListener('click', function () { toggle(true); });
+
+	// Coming back to a chat in progress (reload, another page, a new tab with "browser" storage)
+	var saved = token === null ? loadSession() : null;
+	if (saved) {
+		token = saved.token;
+		getHistory().then(function (h) {
+			started = true;
+			consent.hidden = true; log.hidden = false; form.hidden = false; btnEnd.hidden = false;
+			(h.messages || []).forEach(function (m) { addMsg(m.text, m.from === 'me'); });
+			lastSeq = h.last || 0;
+			openStream();
+			if (saved.open) { toggle(true); }
+		}).catch(function (e) {
+			token = null;
+			// Only a refused token means the chat is over; a network hiccup keeps it for the next page
+			if (e && (e.status === 401 || e.status === 403)) { clearSession(); }
+		});
+	}
 })();

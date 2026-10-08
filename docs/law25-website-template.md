@@ -37,9 +37,9 @@ French. If your site is bilingual, publish both.
 |---|---|---|
 | What the visitor must give | Nothing: no name, email or phone number is requested | – |
 | Message content | Travels browser → chat server (in memory) → an **end-to-end encrypted** Matrix room read by volunteers. Never written to disk or logs by the chat server. **The website (WordPress) never receives it.** | – |
-| Identifier | A random session token held in the widget's memory only: **no cookie, no browser storage**. Sent in a request header; only its hash is kept, in the server's memory. (If you enabled `WEB_SESSION_COOKIE` for widgets older than 0.5.0, describe that cookie too.) | idle timeout; page closed |
+| Identifier | A random session token kept in the visitor's browser (`sessionStorage` for this tab, or `localStorage` if you chose "whole browser"): **no cookie**. Sent in a request header; only its hash is kept, in the server's memory. (If you enabled `WEB_SESSION_COOKIE` for widgets older than 0.5.0, describe that cookie too.) | end of chat; `[48 hours]` without activity |
 | IP address | Kept in the chat server's **memory** for at most one hour (abuse limits). Not written by the chat server. **Your reverse proxy and web host may log it** (access logs). | log retention of your proxy / host: **you set it** |
-| End of a conversation | Visitor presses **End chat**, or a volunteer types `!fin` / `!end`, or the idle timeout passes. The chat server leaves and forgets the room and deletes its record. | `WEB_IDLE_TIMEOUT_MIN` (default 1440 min = 24 h) and the plugin's *Retention sentence* |
+| End of a conversation | Visitor presses **End chat**, or a volunteer types `!fin` / `!end`, or `[48 hours]` pass without any activity. The chat server removes everyone from the room, leaves and forgets it (it disappears from the volunteers' apps) and deletes its record. | `WEB_IDLE_TIMEOUT_MIN` (default 2880 min = 48 h) and the plugin's *Retention sentence* |
 | Who can read a new conversation | **Every active respondent** of the call center is invited to the new room and can read it until one of them types `!ok` (private room: the others are removed). Say so in the policy. | respondents list of the call center (`WEB_CALL_CENTER_ID`) |
 | Copies kept by volunteers | Volunteers' Matrix clients keep their own copy until they delete the room (they are asked to). | volunteer commitment (Part E); optional Matrix server retention policy |
 | Restart of the chat server | Ends all open chats (sessions are in memory). | – |
@@ -60,7 +60,7 @@ French. If your site is bilingual, publish both.
 | Contact for privacy requests (email, postal address, phone) | `[PRIVACY EMAIL]`, `[POSTAL ADDRESS]`, `[PHONE]` |
 | Purpose of the chat (one sentence) | `[PURPOSE, e.g. "to let a person talk anonymously with a volunteer about recovery from addiction"]` |
 | Who answers | `[WHO ANSWERS, e.g. "trained volunteers of our fellowship"]` |
-| Idle timeout (must equal `WEB_IDLE_TIMEOUT_MIN`) | `[24 hours]` |
+| Idle timeout (must equal `WEB_IDLE_TIMEOUT_MIN`) | `[48 hours]` |
 | Server access logs kept for | `[X days]` |
 | Hosting: WordPress / chat server / Matrix server (company and country) | `[HOSTING COMPANIES AND COUNTRIES]` |
 | Matrix server operator | `[MATRIX OPERATOR]` |
@@ -107,7 +107,7 @@ SMS block if you do not offer SMS.*
 > read the conversations. Our volunteers are bound by a written confidentiality commitment.
 >
 > **How long we keep it.** Your conversation is deleted when you press **End chat**, when the
-> volunteer ends it, when you close the page, or after `[24 hours]` of inactivity; the identifier is
+> volunteer ends it, or after `[48 hours]` without any activity (closing or reloading the page does not end it); the identifier is
 > discarded at the same time.
 > The volunteers who took part must delete their copy of the conversation `[and our messaging server
 > removes old messages after X days]`. Technical logs are kept `[X days]`. The fingerprint of a blocked
@@ -136,7 +136,7 @@ SMS block if you do not offer SMS.*
 >
 > | Identifier | Purpose | Kept by | Lifetime |
 > |---|---|---|---|
-> | session token | keeps your conversation going | the open chat page (memory only) and our chat server (`[CHAT SERVER ADDRESS]`, hash only) | until you end the chat, close the page or `[24 hours]` of inactivity |
+> | session token | keeps your conversation going | your browser (this tab, or the whole browser) and our chat server (`[CHAT SERVER ADDRESS]`, hash only) | until you end the chat or `[48 hours]` of inactivity |
 >
 > **SMS line** *(delete if not offered).* If you text our number `[SMS NUMBER]`, we receive your
 > phone number and your messages through `[SMS PROVIDER]` and your mobile carrier, which keep their own
@@ -156,7 +156,7 @@ button is the visitor's consent to start. Keep this notice **short, plain and co
 | Element | Where to set it | Suggested wording (adapt) |
 |---|---|---|
 | Confidentiality sentence | `wp-chat/languages/widget-strings.json` → `consent` | "This chat is confidential. We do not keep your messages on this website." *(default; true as long as WordPress is not in the message path)* |
-| Retention sentence | Settings → WP Chat → *Retention sentence* (keep equal to `WEB_IDLE_TIMEOUT_MIN`) | "Your conversation is deleted when you end the chat or after `[24 hours]` of inactivity." |
+| Retention sentence | Settings → WP Chat → *Retention sentence* (keep equal to `WEB_IDLE_TIMEOUT_MIN`) | "Your conversation is deleted when you end the chat or after `[48 hours]` of inactivity." |
 | Privacy contact | Settings → WP Chat → *Person responsible for privacy* | `[PRIVACY OFFICER NAME]` |
 | Privacy policy link | Settings → WP Chat → *Privacy policy URL* | `[URL OF PART A]` |
 | Start button | `widget-strings.json` → `start` | "I understand, start chatting" |
@@ -249,7 +249,7 @@ Pre-filled with the facts of WP Chat; complete the bracketed parts.
 | 3. Necessity and proportionality | Message content is necessary to hold the conversation. The identifier is needed to keep the conversation going. The IP address is needed to limit abuse. Nothing else is collected. `[Justify and consider alternatives, e.g. a telephone line.]` |
 | 4. Parties and flows | Visitor ↔ chat server (HTTPS) ↔ encrypted Matrix room ↔ volunteers. WordPress is not in the path. Providers: `[HOSTING COMPANIES]`, `[MATRIX OPERATOR]`, `[SMS PROVIDER]`. |
 | 5. Location and transfers | `[WHERE EACH SERVER IS; transfers outside Quebec and the protection assessment]` |
-| 6. Retention and destruction | Web: at end of chat or after `[24 h]`; volunteers delete their copies; proxy logs `[X days]`; block list `[1 day, 30 days at most]`. SMS: after `[7 days]` of silence; opt-out fingerprint kept; backups `[HOW LONG, ENCRYPTED]`. |
+| 6. Retention and destruction | Web: at end of chat or after `[48 h]`; volunteers delete their copies; proxy logs `[X days]`; block list `[1 day, 30 days at most]`. SMS: after `[7 days]` of silence; opt-out fingerprint kept; backups `[HOW LONG, ENCRYPTED]`. |
 | 7. Safeguards | HTTPS; end-to-end encrypted rooms; message text never on disk or in logs; origin allow-list; rate limits; numbers hashed/encrypted; secrets in environment; volunteers' commitment; incident procedure. |
 | 8. Risks and mitigations | See table below. |
 | 9. Residual risks | Volunteers' devices keep copies until deleted; SMS carriers keep records; the visitor's own device and network; `[OTHERS]`. |
@@ -261,7 +261,7 @@ Pre-filled with the facts of WP Chat; complete the bracketed parts.
 | Volunteer keeps or shares a conversation | `[ ]` | commitment, training, deletion procedure | `[audit, remove access]` |
 | Interception in transit | `[ ]` | HTTPS; encrypted rooms | – |
 | Unauthorized access to the servers | `[ ]` | restricted access, secrets outside the code, encrypted fields | `[2FA, monitoring]` |
-| Session token stolen or reused | `[ ]` | random value, memory only, HTTPS, short life, chat ends when the page closes | `[keep WordPress and plugins updated]` |
+| Session token stolen or reused | `[ ]` | random value, HTTPS, hash only on the server, ends after 48 h of inactivity or when the visitor ends the chat | `[keep WordPress and plugins updated]` |
 | Sensitive content exposed by an incident | `[ ]` | register + notification procedure | `[exercise the procedure yearly]` |
 
 ## 9. Alignment checklist (before going live and at every change)

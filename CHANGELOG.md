@@ -2,6 +2,16 @@
 
 # Changelog
 
+## 0.8.0
+- **The chat survives a reload or a move to another page of the site.** The widget keeps the anonymous session code
+  in the browser (`sessionStorage` = this tab only, the default; `localStorage` with the new setting *Keep the chat
+  open across pages* = whole browser) and restores the conversation from the chat server (`GET /web/history`,
+  held in the server's memory only). Messages are never stored in the browser.
+- Closing or leaving the page no longer ends the chat (the end-of-page beacon is gone). Chats end when the visitor
+  presses End chat, a respondent types `!fin`, or after **48 hours** without activity.
+- Default retention sentence is now 48 hours (sites that kept the old default are updated automatically).
+- Requires switchboard-chat with `/web/history`; with an older server a reload simply starts over.
+
 ## 0.7.0
 - A blocked visitor's browser keeps a signed "blocked until" marker (`localStorage` key `wpchat_blocked`, only after a
   block) and sends it when asking for a new chat, so changing VPN or network no longer gets around a ban.

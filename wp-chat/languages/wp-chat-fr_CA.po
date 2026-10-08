@@ -61,8 +61,8 @@ msgstr "Parler à quelqu’un"
 msgid "The chat has ended and your conversation was deleted."
 msgstr "Le clavardage est terminé et votre conversation a été supprimée."
 
-msgid "The chat widget connects your browser directly to our messaging server. This website does not store the content of your conversation. The messaging server gives your browser a temporary random identifier, kept only in the open page (no cookie is used), so your conversation can continue; the conversation and the identifier are deleted when you end the chat, close the page, or after a period of inactivity. If a volunteer blocks a visitor for abuse, a small “blocked until” marker (no personal information) is kept in that visitor's browser until the block ends."
-msgstr "Le clavardage relie votre navigateur directement à notre serveur de messagerie. Ce site Web ne conserve pas le contenu de votre conversation. Le serveur de messagerie remet à votre navigateur un identifiant aléatoire temporaire, gardé seulement dans la page ouverte (aucun témoin n’est utilisé), afin que votre conversation puisse se poursuivre; la conversation et l’identifiant sont supprimés lorsque vous terminez le clavardage, fermez la page ou après une période d’inactivité. Si un bénévole bloque un visiteur pour cause d’abus, un petit marqueur « bloqué jusqu’à » (sans renseignement personnel) est conservé dans le navigateur de ce visiteur jusqu’à la fin du blocage."
+msgid "The chat widget connects your browser directly to our messaging server. This website does not store the content of your conversation. The messaging server gives your browser a temporary random identifier, kept in your browser (no cookie is used) so your conversation continues if you reload the page or open another page of this website; the conversation and the identifier are deleted when you end the chat, or after 48 hours without activity. If a volunteer blocks a visitor for abuse, a small “blocked until” marker (no personal information) is kept in that visitor's browser until the block ends."
+msgstr "Le clavardage relie votre navigateur directement à notre serveur de messagerie. Ce site Web ne conserve pas le contenu de votre conversation. Le serveur de messagerie remet à votre navigateur un identifiant aléatoire temporaire, gardé dans votre navigateur (aucun témoin n’est utilisé) afin que votre conversation se poursuive si vous rechargez la page ou ouvrez une autre page de ce site; la conversation et l’identifiant sont supprimés lorsque vous terminez le clavardage, ou après 48 heures sans activité. Si un bénévole bloque un visiteur pour cause d’abus, un petit marqueur « bloqué jusqu’à » (sans renseignement personnel) est conservé dans le navigateur de ce visiteur jusqu’à la fin du blocage."
 
 msgid "This chat is confidential. We do not keep your messages on this website."
 msgstr "Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur ce site Web."
@@ -70,8 +70,8 @@ msgstr "Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur 
 msgid "Type your message…"
 msgstr "Écrivez votre message…"
 
-msgid "Your conversation is deleted when you end the chat or after 24 hours of inactivity."
-msgstr "Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité."
+msgid "Your conversation is deleted when you end the chat or after 48 hours of inactivity."
+msgstr "Votre conversation est supprimée lorsque vous terminez le clavardage ou après 48 heures d’inactivité."
 
 msgid "Show the chat on"
 msgstr "Afficher le clavardage sur"
@@ -142,3 +142,15 @@ msgstr "Le nom du répondant et la phrase sur la conservation que vous personnal
 
 msgid "Extra text when the chat is unavailable (for example another number to call)"
 msgstr "Texte additionnel quand le clavardage est indisponible (par exemple un autre numéro à appeler)"
+
+msgid "Keep the chat open across pages"
+msgstr "Garder le clavardage ouvert d’une page à l’autre"
+
+msgid "In this browser tab only (forgotten when the tab is closed)"
+msgstr "Dans cet onglet seulement (oublié à la fermeture de l’onglet)"
+
+msgid "In the whole browser (until the chat ends or 48 hours of inactivity)"
+msgstr "Dans tout le navigateur (jusqu’à la fin du clavardage ou 48 heures d’inactivité)"
+
+msgid "The chat survives a page reload and a move to another page of your site. The visitor’s browser keeps only an anonymous session code, never the messages. Choose “this tab only” for visitors who may use a shared computer."
+msgstr "Le clavardage survit au rechargement de la page et au passage à une autre page de votre site. Le navigateur du visiteur ne garde qu’un code de session anonyme, jamais les messages. Choisissez « cet onglet seulement » pour les visiteurs qui pourraient utiliser un ordinateur partagé."

@@ -16,12 +16,13 @@ class El {
 
 function fakeStorage(initial) { const m = new Map(Object.entries(initial || {})); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), _m: m }; }
 
-function startWidget(base, extraCfg, storage) {
+function startWidget(base, extraCfg, storage, session) {
   const made = [], root = new El('div'), winListeners = {}, beacons = [], esCreated = [];
   const document = { getElementById: () => root, createElement: t => { const e = new El(t); made.push(e); return e; } };
   const window = { WPChatConfig: { backend: base, color: '#000', privacyUrl: '', officer: '', langMode: 'en', siteLang: 'en', strings, custom: {}, ...(extraCfg || {}) },
     navigator: { language: 'en', sendBeacon: (url, blob) => { beacons.push({ url, blob }); return true; } },
     localStorage: storage || fakeStorage(),
+    sessionStorage: session || fakeStorage(),
     addEventListener: (t, fn) => { winListeners[t] = fn; } };
   function EventSource(url, opts) { esCreated.push({ url, opts }); this.addEventListener = () => {}; this.close = () => {}; }
   vm.runInNewContext(code, { window, document, navigator: window.navigator, EventSource, fetch, AbortController, TextDecoder, Blob, JSON, Math, setTimeout, clearTimeout });
@@ -82,27 +83,70 @@ async function tokenMode() {
   server.close();
 }
 
-async function beaconOnPageHide() {
-  const log = { ends: [] };
+// A reload or another page of the site: the chat comes back from the session kept in the tab
+async function survivesReload() {
+  const log = { streamHeaders: [], historyAuth: [], ends: 0 };
+  let alive = true;
   const server = http.createServer((req, res) => {
     let body = ''; req.on('data', d => body += d);
     req.on('end', () => {
-      if (req.url === '/web/session') { res.setHeader('content-type', 'application/json'); return res.end(JSON.stringify({ token: 'tokB' })); }
-      if (req.url === '/web/stream') { res.writeHead(200, { 'content-type': 'text/event-stream' }); res.write(': hi\n\n'); return; }
+      res.setHeader('content-type', 'application/json');
+      if (req.url === '/web/session') { return res.end(JSON.stringify({ token: 'tokB' })); }
+      if (req.url === '/web/history') {
+        log.historyAuth.push(req.headers.authorization);
+        if (!alive || req.headers.authorization !== 'Bearer tokB') { res.statusCode = 401; return res.end('{"error":"no_session"}'); }
+        return res.end(JSON.stringify({ last: 3, messages: [{ seq: 1, from: 'me', text: 'Allo' }, { seq: 2, from: 'them', text: 'Bonjour' }, { seq: 3, from: 'them', text: 'Comment ca va' }] }));
+      }
+      if (req.url === '/web/stream') {
+        log.streamHeaders.push(req.headers['last-event-id'] || null);
+        res.writeHead(200, { 'content-type': 'text/event-stream' });
+        res.write(': hi\n\n');
+        // a replay of a line already shown (seq 3) and then a new one (seq 4)
+        setTimeout(() => res.write('event: message\nid: 3\ndata: {"text":"Comment ca va"}\n\nevent: message\nid: 4\ndata: {"text":"Nouveau"}\n\n'), 40);
+        return;
+      }
+      if (req.url === '/web/end') { log.ends++; }
       res.end('{}');
     });
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
-  const w = startWidget('http://127.0.0.1:' + server.address().port);
-  w.winListeners.pagehide(); // before any chat: nothing to end
-  check(w.beacons.length === 0, 'pagehide before a chat started sends nothing');
+  const base = 'http://127.0.0.1:' + server.address().port, session = fakeStorage(), local = fakeStorage();
+  const w = startWidget(base, {}, local, session);
+  check(w.winListeners.pagehide === undefined, 'leaving the page no longer ends the chat');
   w.byClass('wpc-start').fire('click');
   await until(() => !w.byClass('wpc-form').hidden, 'chat started');
-  w.winListeners.pagehide();
-  check(w.beacons.length === 1 && w.beacons[0].url.endsWith('/web/end'), 'pagehide during a chat sends an end beacon');
-  const text = await w.beacons[0].blob.text();
-  check(JSON.parse(text).token === 'tokB', 'the beacon body carries the token (beacons cannot set headers)');
-  server.close(); // the open stream is dropped with the process
+  const kept = JSON.parse(session.getItem('wpchat_session') || 'null');
+  check(kept && kept.token === 'tokB' && local.getItem('wpchat_session') === null, 'the session code is kept in this tab only (sessionStorage), not in localStorage');
+  // new page, same tab
+  const w2 = startWidget(base, {}, local, session);
+  await until(() => w2.texts().includes('Nouveau'), 'restored chat receives live lines');
+  const t = w2.texts();
+  check(t[0] === 'Allo' && t[1] === 'Bonjour' && t[2] === 'Comment ca va', 'reload: the conversation is restored from the server history, in order');
+  check(t.filter(x => x === 'Comment ca va').length === 1, 'reload: a replayed line is not shown twice');
+  check(log.historyAuth[0] === 'Bearer tokB' && log.streamHeaders[log.streamHeaders.length - 1] === '3', 'reload: history and stream use the saved token; the stream resumes after line 3');
+  check(!w2.byClass('wpc-form').hidden && w2.byClass('wpc-consent').hidden, 'reload: the chat is back without asking for consent again');
+  // "browser" mode keeps the code in localStorage instead
+  const sess2 = fakeStorage(), local2 = fakeStorage();
+  const w3 = startWidget(base, { remember: 'browser' }, local2, sess2);
+  w3.byClass('wpc-start').fire('click');
+  await until(() => !w3.byClass('wpc-form').hidden, 'chat started in browser mode');
+  check(local2.getItem('wpchat_session') !== null && sess2.getItem('wpchat_session') === null, 'remember=browser: kept in localStorage');
+  // an ended chat is forgotten: refused token clears the saved session
+  alive = false;
+  const w4 = startWidget(base, {}, local, session);
+  await until(() => session.getItem('wpchat_session') === null, 'dead session removed');
+  check(w4.byClass('wpc-consent').hidden !== true, 'ended chat: the visitor sees the consent screen again');
+  // ending the chat erases the saved session
+  alive = true;
+  const s3 = fakeStorage();
+  const w5 = startWidget(base, {}, local, s3);
+  w5.byClass('wpc-start').fire('click');
+  await until(() => !w5.byClass('wpc-form').hidden, 'chat started again');
+  const btnEnd = w5.made.filter(e => e.className === 'wpc-btn')[0];
+  btnEnd.fire('click');
+  await until(() => s3.getItem('wpchat_session') === null, 'session erased when the visitor ends the chat');
+  check(log.ends >= 1, 'ending the chat tells the server');
+  server.close();
 }
 
 async function refusedVisitors() {
@@ -206,7 +250,7 @@ async function legacyCookieServer() {
 }
 
 (async () => {
-  try { await tokenMode(); await beaconOnPageHide(); await refusedVisitors(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
+  try { await tokenMode(); await survivesReload(); await refusedVisitors(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
   catch (e) { failures++; console.log('FAIL', e.message); }
   console.log(failures ? failures + ' failure(s)' : 'all passed');
   process.exit(failures ? 1 : 0);

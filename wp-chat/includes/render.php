@@ -50,7 +50,10 @@ add_action( 'wp_enqueue_scripts', function () {
 	if ( '' !== trim( (string) $o['agent_name'] ) && ! in_array( $o['agent_name'], $agent_defaults, true ) ) {
 		$custom['agentName'] = $o['agent_name'];
 	}
-	$retention_defaults = array( $strings['en']['retention'], $strings['fr']['retention'], wp_chat_defaults()['retention_text'] );
+	$retention_defaults = array( $strings['en']['retention'], $strings['fr']['retention'], wp_chat_defaults()['retention_text'],
+		// Earlier defaults (24 h), so a site that saved one still gets the current wording
+		'Your conversation is deleted when you end the chat or after 24 hours of inactivity.',
+		'Votre conversation est supprimée lorsque vous terminez le clavardage ou après 24 heures d’inactivité.' );
 	if ( '' !== trim( (string) $o['retention_text'] ) && ! in_array( $o['retention_text'], $retention_defaults, true ) ) {
 		$custom['retention'] = $o['retention_text'];
 	}
@@ -60,6 +63,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		'privacyUrl' => $o['privacy_url'],
 		'officer'    => $o['privacy_officer'],
 		'unavailableText' => $o['unavailable_text'],
+		'remember'   => ( 'browser' === $o['remember'] ) ? 'browser' : 'tab',
 		'langMode'   => $o['language_mode'],
 		'siteLang'   => ( 0 === strpos( determine_locale(), 'fr' ) ) ? 'fr' : 'en',
 		'strings'    => $strings,

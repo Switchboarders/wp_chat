@@ -2,6 +2,17 @@
 
 # Historique des versions
 
+## 0.8.0
+- **Le clavardage survit au rechargement et au passage à une autre page du site.** Le module garde le code de
+  session anonyme dans le navigateur (`sessionStorage` = cet onglet seulement, par défaut; `localStorage` avec le
+  nouveau réglage *Garder le clavardage ouvert d’une page à l’autre* = tout le navigateur) et restaure la
+  conversation depuis le serveur de clavardage (`GET /web/history`, gardée dans la mémoire du serveur seulement).
+  Les messages ne sont jamais stockés dans le navigateur.
+- Fermer la page ou la quitter ne met plus fin au clavardage (la balise de fin de page est retirée). Le clavardage
+  prend fin quand le visiteur appuie sur Terminer, quand un répondant écrit `!fin`, ou après **48 heures** sans activité.
+- La phrase de conservation par défaut est maintenant de 48 heures (les sites qui avaient gardé l’ancienne valeur par défaut sont mis à jour automatiquement).
+- Exige switchboard-chat avec `/web/history`; avec un ancien serveur, un rechargement recommence à zéro.
+
 ## 0.7.0
 - Le navigateur d’un visiteur bloqué garde un marqueur signé « bloqué jusqu’à » (clé `wpchat_blocked` du
   `localStorage`, seulement après un blocage) et l’envoie quand il demande un nouveau clavardage : changer de VPN
