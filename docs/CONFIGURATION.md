@@ -17,7 +17,7 @@ and why not, and **Test the chat server** checks the connection from your browse
 | Person responsible for privacy | `privacy_officer` | empty | Name shown in the consent notice ("Privacy contact: …"). |
 | Retention sentence | `retention_text` | "Your conversation is deleted when you end the chat or after 48 hours of inactivity." | Shown before the visitor starts. **Keep it equal to the server's `WEB_IDLE_TIMEOUT_MIN` (48 h = 2880).** |
 | Keep the chat open across pages | `remember` | `tab` | `tab`: the chat survives a reload and other pages of the site, in this browser tab only (forgotten when the tab is closed; best for shared computers). `browser`: kept in the whole browser (also in new tabs and after a restart) until the chat ends or 48 h without activity. Only an anonymous session code is kept in the browser, never the messages. |
-| Extra text when the chat is unavailable | `unavailable_text` | empty | Up to 300 characters shown under the message when a visitor cannot be served (blocked connection, nobody available, server busy): put another way to get help, for example a phone number. |
+| Extra text when the chat is unavailable | `unavailable_text` | empty | Up to 300 characters shown under the message when a visitor cannot be served (blocked connection, nobody available, server busy): put another way to get help, for example a phone number. When nobody is on duty, the message above it is the call center's `no_respondent` macro if one is set in SwitchBoard (otherwise the widget's own sentence). |
 | Widget language | `language_mode` | `auto` | See "Language". |
 | Show the chat on | `display_mode`, `page_ids`, `include_posts` | all pages | See "Where the chat appears". |
 

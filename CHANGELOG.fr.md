@@ -2,6 +2,12 @@
 
 # Historique des versions
 
+## 0.8.1
+- Quand personne n’est de garde, le module affiche la macro `no_respondent` du centre d’appels (le même texte que
+  reçoivent les appelants SMS), définie dans SwitchBoard. Sans cette macro, il garde sa propre phrase. Le *Texte
+  additionnel quand le clavardage est indisponible* de l’administrateur s’affiche toujours dessous. Exige
+  switchboard-chat avec cette fonction.
+
 ## 0.8.0
 - **Le clavardage survit au rechargement et au passage à une autre page du site.** Le module garde le code de
   session anonyme dans le navigateur (`sessionStorage` = cet onglet seulement, par défaut; `localStorage` avec le

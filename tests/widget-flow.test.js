@@ -167,6 +167,20 @@ async function refusedVisitors() {
 
 function zeroBitsOf(buf) { let b = 0; for (const x of buf) { if (x === 0) { b += 8; continue; } b += Math.clz32(x) - 24; break; } return b; }
 
+async function noRespondentMacro() {
+  const MACRO = 'Aucun bénévole pour le moment. Appelez le 555-0199.';
+  const server = http.createServer((req, res) => {
+    req.on('data', () => {}); req.on('end', () => { res.statusCode = 503; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify({ error: 'no_respondent', message: MACRO })); });
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const w = startWidget('http://127.0.0.1:' + server.address().port, { unavailableText: 'Call 555-0100.' });
+  w.byClass('wpc-start').fire('click');
+  await until(() => w.texts().some(t => t.includes(MACRO)), 'no_respondent macro shown');
+  check(!w.texts().some(t => t.includes(strings.en.unavailable)), 'no_respondent: the call center macro replaces the generic sentence');
+  check(w.texts().some(t => t.includes('Call 555-0100.')), 'no_respondent: the administrator contact text is still shown');
+  server.close();
+}
+
 async function challengeFlow() {
   const log = { sessionCalls: 0, solved: null };
   const CH = 'chal.v1', BITS = 12;
@@ -250,7 +264,7 @@ async function legacyCookieServer() {
 }
 
 (async () => {
-  try { await tokenMode(); await survivesReload(); await refusedVisitors(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
+  try { await tokenMode(); await survivesReload(); await refusedVisitors(); await noRespondentMacro(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
   catch (e) { failures++; console.log('FAIL', e.message); }
   console.log(failures ? failures + ' failure(s)' : 'all passed');
   process.exit(failures ? 1 : 0);

@@ -2,6 +2,11 @@
 
 # Changelog
 
+## 0.8.1
+- When nobody is on duty, the widget shows the call center's `no_respondent` macro (the same text SMS callers
+  receive), set in SwitchBoard. Without such a macro it keeps its own sentence. The administrator's *Extra text
+  when the chat is unavailable* is still shown under it. Needs switchboard-chat with this feature.
+
 ## 0.8.0
 - **The chat survives a reload or a move to another page of the site.** The widget keeps the anonymous session code
   in the browser (`sessionStorage` = this tab only, the default; `localStorage` with the new setting *Keep the chat

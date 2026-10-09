@@ -279,8 +279,10 @@
 	// administrator's own text (for example another number to call).
 	function showProblem(e) {
 		var code = e && e.code;
+		// Nobody on duty: the call center's own "no_respondent" macro when it has one (same text as for SMS callers)
+		var macro = code === 'no_respondent' && e.body && typeof e.body.message === 'string' && e.body.message.trim();
 		var text = code === 'blocked' ? t.blocked
-			: code === 'no_respondent' ? t.unavailable
+			: code === 'no_respondent' ? (macro || t.unavailable)
 			: code === 'busy' ? t.busy
 			: code === 'rate_limited' ? t.rate
 			: t.error;
