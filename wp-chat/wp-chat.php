@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       WP Chat
  * Description:       Minimizable one-on-one chat widget that connects visitors directly to a switchboard-chat backend. No message content is stored on this server.
- * Version:           0.8.1
+ * Version:           0.9.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Plugin URI:        https://github.com/Switchboarders/wp_chat
@@ -26,11 +26,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WP_CHAT_VERSION', '0.8.1' );
+define( 'WP_CHAT_VERSION', '0.9.0' );
 define( 'WP_CHAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_CHAT_URL', plugin_dir_url( __FILE__ ) );
 
 require_once WP_CHAT_DIR . 'includes/settings.php';
+require_once WP_CHAT_DIR . 'includes/pairing.php';
 require_once WP_CHAT_DIR . 'includes/render.php';
 
 add_action( 'init', function () {

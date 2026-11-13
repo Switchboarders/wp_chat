@@ -27,6 +27,10 @@ anonymous and the conversation must stay confidential.
 
 ## Quick start
 
+**With SwitchBoard:** in the committee's *SwitchBoard Chat* page, *Link a website* shows a string; install the
+plugin and paste it in *Settings > WP Chat > Link this website to a committee*. That's all. Without SwitchBoard,
+or to configure the server by hand:
+
 1. Set up the chat server (switchboard-chat `docs/web-chat.md`, `docs/reverse-proxy.md`) and allow your
    website's address in its `WEB_ALLOWED_ORIGINS`.
 2. Install the plugin: `zip -r wp-chat.zip wp-chat`, then Plugins → Add New → Upload.

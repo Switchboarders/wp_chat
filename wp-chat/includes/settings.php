@@ -26,6 +26,8 @@ function wp_chat_get_options() {
 
 function wp_chat_sanitize( $in ) {
 	$d = wp_chat_defaults();
+	$current = get_option( 'wp_chat_options', array() );
+	$current = is_array( $current ) ? $current : array();
 	$page_ids = array();
 	foreach ( (array) ( $in['page_ids'] ?? array() ) as $id ) {
 		$id = absint( $id );
@@ -56,6 +58,9 @@ function wp_chat_sanitize( $in ) {
 		'display_mode'    => ( 'selected' === ( $in['display_mode'] ?? '' ) ) ? 'selected' : 'all',
 		'page_ids'        => array_values( array_unique( $page_ids ) ),
 		'include_posts'   => empty( $in['include_posts'] ) ? 0 : 1,
+		// set by "Link this website" (includes/pairing.php), kept when the other settings are saved
+		'linked_at'       => absint( $current['linked_at'] ?? 0 ),
+		'linked_to'       => esc_url_raw( $current['linked_to'] ?? '' ),
 	);
 }
 
@@ -83,7 +88,7 @@ add_action( 'admin_menu', function () {
 function wp_chat_status_notice( $o ) {
 	if ( empty( $o['backend_url'] ) ) {
 		$class = 'notice-error';
-		$text  = __( 'The chat is NOT displayed: the Backend URL is empty. Enter the https:// address of your chat server below and save.', 'wp-chat' );
+		$text  = __( 'The chat is NOT displayed: the Backend URL is empty. Link this website with the string from SwitchBoard (below), or enter the https:// address of your chat server and save.', 'wp-chat' );
 	} elseif ( 'selected' === $o['display_mode'] && empty( $o['page_ids'] ) && empty( $o['include_posts'] ) ) {
 		$class = 'notice-warning';
 		$text  = __( 'The chat is NOT displayed: "Only the selected pages" is chosen but no page is ticked.', 'wp-chat' );
@@ -102,7 +107,7 @@ function wp_chat_status_notice( $o ) {
 	$msgs = array(
 		'testing' => __( 'Testing…', 'wp-chat' ),
 		'ok'      => __( 'The chat server answers and accepts this website.', 'wp-chat' ),
-		'fail'    => __( 'Cannot reach the chat server from this browser. Check the address (https, no typo), that the server is running, and that this website\'s address is listed in WEB_ALLOWED_ORIGINS on the server.', 'wp-chat' ),
+		'fail'    => __( 'Cannot reach the chat server from this browser. Check the address (https, no typo), that the server is running, and that this website is linked (with a string from SwitchBoard, above) or listed in WEB_ALLOWED_ORIGINS on the server.', 'wp-chat' ),
 		'other'   => __( 'The chat server answered, but with an unexpected status:', 'wp-chat' ),
 	);
 	echo '<p><button type="button" class="button" id="wp-chat-test">' . esc_html__( 'Test the chat server', 'wp-chat' ) . '</button> <span id="wp-chat-test-result"></span></p>';
@@ -129,6 +134,7 @@ function wp_chat_settings_page() {
 	echo '<div class="wrap"><h1>WP Chat</h1>';
 	settings_errors( 'wp_chat_options' );
 	wp_chat_status_notice( $o );
+	wp_chat_link_box( $o );
 	echo '<form method="post" action="options.php">';
 	settings_fields( 'wp_chat' );
 	echo '<table class="form-table">';

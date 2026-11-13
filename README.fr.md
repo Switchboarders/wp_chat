@@ -28,6 +28,10 @@ exemple les programmes en 12 étapes), où le visiteur doit rester anonyme et la
 
 ## Démarrage rapide
 
+**Avec SwitchBoard :** dans la page *SwitchBoard Chat* du comité, *Relier un site Web* affiche une chaîne;
+installez le module et collez-la dans *Réglages > WP Chat > Relier ce site à un comité*. C’est tout. Sans
+SwitchBoard, ou pour configurer le serveur à la main :
+
 1. Installez le serveur de clavardage (switchboard-chat `docs/fr/web-chat.md`, `docs/fr/reverse-proxy.md`)
    et autorisez l’adresse de votre site Web dans son `WEB_ALLOWED_ORIGINS`.
 2. Installez le module : `zip -r wp-chat.zip wp-chat`, puis Extensions → Ajouter → Téléverser.

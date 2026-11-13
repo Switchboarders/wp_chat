@@ -2,7 +2,13 @@
 
 # Historique des versions
 
-## Non publié
+## 0.9.0
+- **Relier ce site à un comité avec une seule chaîne, rien à configurer sur le serveur.** Dans SwitchBoard, la
+  page *SwitchBoard Chat* du comité affiche une chaîne comme `https://chat.example.org#K7QM-3XRA-PW2D` (valide 30
+  minutes, une seule fois). Collez-la dans *Réglages > WP Chat > Relier ce site à un comité* : le module remplit
+  l’adresse du serveur, et le serveur de clavardage accepte ce site et envoie ses clavardages à ce comité. Demande
+  switchboard-chat avec `POST /web/pair`. Une adresse entrée à la main (avec `WEB_ALLOWED_ORIGINS` sur le serveur)
+  fonctionne toujours.
 - **Code source ouvert.** Publié sous la licence publique générale GNU, version 2 ou ultérieure (fichier
   LICENSE), par Switchboarders. Ajout de SECURITY.md (signalement privé des vulnérabilités) et de
   CONTRIBUTING.md; en-tête du module avec Plugin URI, auteur et URI de la licence.

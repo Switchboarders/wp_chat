@@ -2,7 +2,13 @@
 
 # Changelog
 
-## Unreleased
+## 0.9.0
+- **Link this website to a committee with one string, nothing to set up on the server.** In SwitchBoard, the
+  committee's *SwitchBoard Chat* page shows a string such as `https://chat.example.org#K7QM-3XRA-PW2D` (valid 30
+  minutes, used once). Paste it in *Settings > WP Chat > Link this website to a committee*: the plugin fills in the
+  Backend URL, and the chat server accepts this website and sends its chats to that committee. Needs
+  switchboard-chat with `POST /web/pair`. A Backend URL typed by hand (with `WEB_ALLOWED_ORIGINS` on the server)
+  keeps working.
 - **Open source.** Published under the GNU GPL, version 2 or later (LICENSE file), by Switchboarders.
   Added SECURITY.md (private vulnerability reporting) and CONTRIBUTING.md; plugin header with Plugin URI,
   author and license URI.
