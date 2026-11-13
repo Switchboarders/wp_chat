@@ -53,6 +53,12 @@ Full steps: [docs/INSTALL.md](docs/INSTALL.md).
 
 `wp-chat/` is the plugin (the folder to install) · `dev/` a Docker test site · `tests/` Node tests · `docs/`.
 
+## Contributing and security
+
+Issues and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Report security problems
+privately, never in a public issue: see [SECURITY.md](SECURITY.md).
+
 ## License
 
-GPL-2.0-or-later (see the plugin header).
+Copyright (C) 2026 Switchboarders. Free software under the **GNU General Public License, version 2 or (at
+your option) any later version** (GPL-2.0-or-later), like WordPress itself: see [LICENSE](LICENSE).

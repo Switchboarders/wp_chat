@@ -2,6 +2,11 @@
 
 # Historique des versions
 
+## Non publié
+- **Code source ouvert.** Publié sous la licence publique générale GNU, version 2 ou ultérieure (fichier
+  LICENSE), par Switchboarders. Ajout de SECURITY.md (signalement privé des vulnérabilités) et de
+  CONTRIBUTING.md; en-tête du module avec Plugin URI, auteur et URI de la licence.
+
 ## 0.8.1
 - Quand personne n’est de garde, le module affiche la macro `no_respondent` du centre d’appels (le même texte que
   reçoivent les appelants SMS), définie dans SwitchBoard. Sans cette macro, il garde sa propre phrase. Le *Texte

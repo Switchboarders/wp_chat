@@ -56,6 +56,12 @@ exemple les programmes en 12 étapes), où le visiteur doit rester anonyme et la
 `wp-chat/` est le module (le dossier à installer) · `dev/` un site d’essai Docker · `tests/` des tests Node ·
 `docs/`.
 
+## Contribuer et sécurité
+
+Les signalements et les demandes de fusion sont bienvenus : voir [CONTRIBUTING.md](CONTRIBUTING.md). Signalez
+les problèmes de sécurité en privé, jamais dans un signalement public : voir [SECURITY.md](SECURITY.md).
+
 ## Licence
 
-GPL-2.0-or-later (voir l’en-tête du module).
+Copyright (C) 2026 Switchboarders. Logiciel libre sous la **Licence publique générale GNU, version 2 ou (à
+votre choix) toute version ultérieure** (GPL-2.0-or-later), comme WordPress : voir [LICENSE](LICENSE).

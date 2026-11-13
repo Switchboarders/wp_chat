@@ -2,6 +2,11 @@
 
 # Changelog
 
+## Unreleased
+- **Open source.** Published under the GNU GPL, version 2 or later (LICENSE file), by Switchboarders.
+  Added SECURITY.md (private vulnerability reporting) and CONTRIBUTING.md; plugin header with Plugin URI,
+  author and license URI.
+
 ## 0.8.1
 - When nobody is on duty, the widget shows the call center's `no_respondent` macro (the same text SMS callers
   receive), set in SwitchBoard. Without such a macro it keeps its own sentence. The administrator's *Extra text
