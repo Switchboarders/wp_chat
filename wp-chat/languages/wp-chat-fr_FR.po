@@ -190,3 +190,12 @@ msgstr "Dans SwitchBoard, la page « SwitchBoard Chat » du comité a un bouton 
 
 msgid "Link"
 msgstr "Relier"
+
+msgid "Full-screen chat page (mobile app)"
+msgstr "Page de clavardage plein écran (application mobile)"
+
+msgid "— None —"
+msgstr "— Aucune —"
+
+msgid "On this one page, the website (menu, header, content, footer) is hidden and the chat is already open and fills the whole screen, without the minimize button. Use its address in a mobile app’s webview. The chat is shown on this page even if it is not ticked above."
+msgstr "Sur cette seule page, le site (menu, en-tête, contenu, pied de page) est masqué et le clavardage est déjà ouvert et occupe tout l’écran, sans bouton pour le réduire. Utilisez son adresse dans la vue Web (webview) d’une application mobile. Le clavardage est affiché sur cette page même si elle n’est pas cochée plus haut."

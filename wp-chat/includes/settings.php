@@ -17,6 +17,7 @@ function wp_chat_defaults() {
 		'display_mode'  => 'all', // 'all' or 'selected'
 		'page_ids'      => array(),
 		'include_posts' => 0,
+		'fullscreen_page' => 0, // page shown as a full-screen chat only (for a mobile app's webview); 0 = none
 	);
 }
 
@@ -58,6 +59,7 @@ function wp_chat_sanitize( $in ) {
 		'display_mode'    => ( 'selected' === ( $in['display_mode'] ?? '' ) ) ? 'selected' : 'all',
 		'page_ids'        => array_values( array_unique( $page_ids ) ),
 		'include_posts'   => empty( $in['include_posts'] ) ? 0 : 1,
+		'fullscreen_page' => ( absint( $in['fullscreen_page'] ?? 0 ) && 'page' === get_post_type( absint( $in['fullscreen_page'] ) ) ) ? absint( $in['fullscreen_page'] ) : 0,
 		// set by "Link this website" (includes/pairing.php), kept when the other settings are saved
 		'linked_at'       => absint( $current['linked_at'] ?? 0 ),
 		'linked_to'       => esc_url_raw( $current['linked_to'] ?? '' ),
@@ -207,6 +209,19 @@ function wp_chat_settings_page() {
 	);
 	echo '</fieldset>';
 	echo '<p class="description">' . esc_html__( 'The chat is hidden everywhere else, including search results and archives.', 'wp-chat' ) . '</p>';
+	echo '</td></tr>';
+
+	// One page that shows only the chat, full screen (for a mobile app's webview)
+	echo '<tr><th><label for="fullscreen_page">' . esc_html__( 'Full-screen chat page (mobile app)', 'wp-chat' ) . '</label></th><td>';
+	echo wp_dropdown_pages( array(
+		'echo'              => 0,
+		'id'                => 'fullscreen_page',
+		'name'              => 'wp_chat_options[fullscreen_page]',
+		'selected'          => (int) $o['fullscreen_page'],
+		'show_option_none'  => __( '— None —', 'wp-chat' ),
+		'option_none_value' => 0,
+	) );
+	echo '<p class="description">' . esc_html__( 'On this one page, the website (menu, header, content, footer) is hidden and the chat is already open and fills the whole screen, without the minimize button. Use its address in a mobile app’s webview. The chat is shown on this page even if it is not ticked above.', 'wp-chat' ) . '</p>';
 	echo '</td></tr>';
 	echo '</table>';
 	submit_button();

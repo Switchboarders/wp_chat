@@ -1,5 +1,8 @@
 [English](README.md) · **Français**
 
+> **Télécharger :** [dernière version (dist/wp-chat-0.9.0.zip)](dist/wp-chat-0.9.0.zip) · [toutes les versions](dist/) ·
+> [historique des versions](CHANGELOG.fr.md)
+
 # WP Chat
 
 Un module WordPress qui ajoute à votre site Web une **fenêtre de clavardage réductible, en tête-à-tête**.
@@ -34,7 +37,7 @@ SwitchBoard, ou pour configurer le serveur à la main :
 
 1. Installez le serveur de clavardage (switchboard-chat `docs/fr/web-chat.md`, `docs/fr/reverse-proxy.md`)
    et autorisez l’adresse de votre site Web dans son `WEB_ALLOWED_ORIGINS`.
-2. Installez le module : `zip -r wp-chat.zip wp-chat`, puis Extensions → Ajouter → Téléverser.
+2. Installez le module : téléchargez le dernier zip (lien en haut), puis Extensions → Ajouter → Téléverser une extension.
 3. Réglages → WP Chat : entrez l’adresse `https://` du serveur de clavardage, la personne-ressource en
    matière de confidentialité et l’URL de la politique, enregistrez, puis appuyez sur **Tester le serveur
    de clavardage**.

@@ -440,6 +440,12 @@
 	btnMin.addEventListener('click', function () { toggle(false); });
 	bubble.addEventListener('click', function () { toggle(true); });
 
+	// Full-screen page (mobile app webview): the window is always open and cannot be minimized
+	if (cfg.fullscreen) {
+		btnMin.hidden = true;
+		toggle(true);
+	}
+
 	// Coming back to a chat in progress (reload, another page, a new tab with "browser" storage)
 	var saved = token === null ? loadSession() : null;
 	if (saved) {

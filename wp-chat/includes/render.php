@@ -8,10 +8,23 @@ if ( ! defined( 'ABSPATH' ) ) {
  * everywhere or on one of the pages chosen in Settings > WP Chat.
  * Call it from wp hooks that run after the query is parsed (wp_enqueue_scripts, wp_footer).
  */
+/**
+ * Whether the current request is the page chosen as "Full-screen chat page (mobile app)":
+ * only the chat is rendered there, open and filling the screen.
+ */
+function wp_chat_is_fullscreen_page() {
+	$o = wp_chat_get_options();
+	$id = absint( $o['fullscreen_page'] ?? 0 );
+	return $id && ! empty( $o['backend_url'] ) && is_page( $id );
+}
+
 function wp_chat_should_display() {
 	$o = wp_chat_get_options();
 	if ( empty( $o['backend_url'] ) ) {
 		return false; // Not configured: render nothing.
+	}
+	if ( wp_chat_is_fullscreen_page() ) {
+		return true; // The full-screen page always shows the chat, whatever "Show the chat on" says.
 	}
 	if ( 'selected' !== $o['display_mode'] ) {
 		return true;
@@ -68,11 +81,23 @@ add_action( 'wp_enqueue_scripts', function () {
 		'siteLang'   => ( 0 === strpos( determine_locale(), 'fr' ) ) ? 'fr' : 'en',
 		'strings'    => $strings,
 		'custom'     => (object) $custom,
+		'fullscreen' => wp_chat_is_fullscreen_page(),
 	) );
 } );
 
 add_action( 'wp_footer', function () {
 	if ( wp_chat_should_display() ) {
-		echo '<div id="wp-chat-root" aria-live="polite"></div>';
+		$class = wp_chat_is_fullscreen_page() ? ' class="wpc-fullscreen"' : '';
+		echo '<div id="wp-chat-root"' . $class . ' aria-live="polite"></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- fixed markup
 	}
+} );
+
+// The full-screen page replaces the theme's template with a bare one (no menu, header or footer),
+// whatever the theme, and never shows the admin toolbar.
+add_filter( 'template_include', function ( $template ) {
+	return wp_chat_is_fullscreen_page() ? WP_CHAT_DIR . 'includes/fullscreen-template.php' : $template;
+}, 99 );
+
+add_filter( 'show_admin_bar', function ( $show ) {
+	return wp_chat_is_fullscreen_page() ? false : $show;
 } );

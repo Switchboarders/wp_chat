@@ -3,6 +3,11 @@
 # Historique des versions
 
 ## 0.9.0
+- **Page de clavardage plein écran pour la vue Web d’une application mobile.** Nouveau réglage *Page de clavardage
+  plein écran (application mobile)* : sur la page choisie, le thème (menu, en-tête, contenu, pied de page) et la
+  barre d’outils d’administration ne sont pas affichés, et le clavardage est déjà ouvert et occupe tout l’écran,
+  sans bulle ni bouton pour le réduire (zones de l’encoche respectées, pas de zoom iOS pendant la saisie). Le
+  clavardage apparaît sur cette page même si elle n’est pas cochée sous *Afficher le clavardage sur*.
 - **Relier ce site à un comité avec une seule chaîne, rien à configurer sur le serveur.** Dans SwitchBoard, la
   page *SwitchBoard Chat* du comité affiche une chaîne comme `https://chat.example.org#K7QM-3XRA-PW2D` (valide 30
   minutes, une seule fois). Collez-la dans *Réglages > WP Chat > Relier ce site à un comité* : le module remplit

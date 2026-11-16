@@ -3,6 +3,10 @@
 # Changelog
 
 ## 0.9.0
+- **Full-screen chat page for a mobile app's webview.** New setting *Full-screen chat page (mobile app)*: on the
+  one page chosen, the theme (menu, header, content, footer) and the admin toolbar are not shown, and the chat is
+  already open and fills the screen, with no bubble or minimize button (safe areas for notches respected, no iOS
+  zoom on typing). The chat appears on that page even if it is not ticked under *Show the chat on*.
 - **Link this website to a committee with one string, nothing to set up on the server.** In SwitchBoard, the
   committee's *SwitchBoard Chat* page shows a string such as `https://chat.example.org#K7QM-3XRA-PW2D` (valid 30
   minutes, used once). Paste it in *Settings > WP Chat > Link this website to a committee*: the plugin fills in the

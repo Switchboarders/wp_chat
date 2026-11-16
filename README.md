@@ -1,5 +1,8 @@
 **English** · [Français](README.fr.md)
 
+> **Download:** [latest release (dist/wp-chat-0.9.0.zip)](dist/wp-chat-0.9.0.zip) · [all releases](dist/) ·
+> [changelog](CHANGELOG.md)
+
 # WP Chat
 
 A WordPress plugin that adds a **minimizable, one-on-one chat window** to your website. A visitor talks,
@@ -33,7 +36,7 @@ or to configure the server by hand:
 
 1. Set up the chat server (switchboard-chat `docs/web-chat.md`, `docs/reverse-proxy.md`) and allow your
    website's address in its `WEB_ALLOWED_ORIGINS`.
-2. Install the plugin: `zip -r wp-chat.zip wp-chat`, then Plugins → Add New → Upload.
+2. Install the plugin: download the latest zip (link at the top), then Plugins → Add New → Upload Plugin.
 3. Settings → WP Chat: enter the chat server's `https://` address, the privacy contact and policy
    URL, save, press **Test the chat server**.
 4. Open the site in a private window and try a chat.

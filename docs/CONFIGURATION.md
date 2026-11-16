@@ -20,6 +20,7 @@ and why not, and **Test the chat server** checks the connection from your browse
 | Extra text when the chat is unavailable | `unavailable_text` | empty | Up to 300 characters shown under the message when a visitor cannot be served (blocked connection, nobody available, server busy): put another way to get help, for example a phone number. When nobody is on duty, the message above it is the call center's `no_respondent` macro if one is set in SwitchBoard (otherwise the widget's own sentence). |
 | Widget language | `language_mode` | `auto` | See "Language". |
 | Show the chat on | `display_mode`, `page_ids`, `include_posts` | all pages | See "Where the chat appears". |
+| Full-screen chat page (mobile app) | `fullscreen_page` | none | One page that shows only the chat, open and filling the screen, for a mobile app's webview. See "Full-screen chat page (mobile app)". |
 
 ## Language
 
@@ -52,6 +53,24 @@ Notes:
 - If you choose "selected" and tick nothing, the chat is displayed nowhere; the status line warns you.
 - Only published pages are listed. Other content types (products, custom post types) are not
   selectable; use "All pages" and a theme rule if you need them.
+
+## Full-screen chat page (mobile app)
+
+Choose one published page in **Full-screen chat page (mobile app)** and open its address in your app's
+webview. On that page only:
+
+- the theme is not used: no menu, header, page content, sidebar or footer, and no admin toolbar (the plugin
+  replaces the page template with a bare one that still runs `wp_head()`/`wp_footer()`);
+- the chat window is already open and fills the screen (width and height), with no bubble and no minimize button;
+  it respects the phone's notch / home bar (`viewport-fit=cover`, `env(safe-area-inset-*)`), and the text box uses
+  16 px so iOS does not zoom in when typing;
+- the chat is shown even if the page is not ticked under "Show the chat on" (it still needs a Backend URL);
+- the page is marked `noindex`.
+
+Only one page can be chosen. The page looks the same on a computer (full window). Every other page keeps the
+normal bubble. A blank page created just for this works best; its content is never displayed. The webview must
+allow JavaScript and DOM storage (`setJavaScriptEnabled(true)` and `setDomStorageEnabled(true)` on Android) so
+the chat survives the app being paused or reloaded.
 
 ## Appearance
 

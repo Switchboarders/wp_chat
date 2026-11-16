@@ -25,7 +25,8 @@ Before you start, have these two values:
 
 ## 1. Get the plugin
 
-Build the zip from a checkout of this repository:
+Download the latest release zip from the [`dist/`](../dist/) folder (`wp-chat-<version>.zip`, also linked at the
+top of the README). To build it yourself from a checkout of this repository, run `sh dev/build-zip.sh`, or:
 
 ```bash
 zip -r wp-chat.zip wp-chat -x "*.DS_Store"

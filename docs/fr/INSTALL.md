@@ -26,7 +26,9 @@ Avant de commencer, ayez ces deux valeurs :
 
 ## 1. Obtenir le module
 
-Construisez le fichier zip à partir d’une copie de ce dépôt :
+Téléchargez le zip de la dernière version dans le dossier [`dist/`](../../dist/) (`wp-chat-<version>.zip`, aussi
+en lien en haut du README). Pour le construire vous-même à partir d’une copie de ce dépôt, lancez
+`sh dev/build-zip.sh`, ou :
 
 ```bash
 zip -r wp-chat.zip wp-chat -x "*.DS_Store"

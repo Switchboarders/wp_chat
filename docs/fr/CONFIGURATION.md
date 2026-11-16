@@ -20,6 +20,7 @@ pourquoi; **Tester le serveur de clavardage** vérifie la connexion depuis votre
 | Texte additionnel quand le clavardage est indisponible | `unavailable_text` | vide | Jusqu’à 300 caractères affichés sous le message quand un visiteur ne peut pas être servi (connexion bloquée, personne de disponible, serveur occupé) : indiquez un autre moyen d’obtenir de l’aide, par exemple un numéro de téléphone. Quand personne n’est de garde, le message au-dessus est la macro `no_respondent` du centre d’appels si elle est définie dans SwitchBoard (sinon la phrase du module). |
 | Langue du clavardage | `language_mode` | `auto` | Voir « Langue ». |
 | Afficher le clavardage sur | `display_mode`, `page_ids`, `include_posts` | toutes les pages | Voir « Où le clavardage apparaît ». |
+| Page de clavardage plein écran (application mobile) | `fullscreen_page` | aucune | Une page qui n’affiche que le clavardage, ouvert et plein écran, pour la vue Web d’une application mobile. Voir « Page de clavardage plein écran (application mobile) ». |
 
 ## Langue
 
@@ -55,6 +56,27 @@ Remarques :
 - Seules les pages publiées sont listées. Les autres types de contenu (produits, types de contenu
   personnalisés) ne sont pas sélectionnables; utilisez « Toutes les pages » et une règle dans le thème si
   vous en avez besoin.
+
+## Page de clavardage plein écran (application mobile)
+
+Choisissez une page publiée dans **Page de clavardage plein écran (application mobile)** et ouvrez son adresse
+dans la vue Web (webview) de votre application. Sur cette page seulement :
+
+- le thème n’est pas utilisé : pas de menu, d’en-tête, de contenu de page, de barre latérale ni de pied de page,
+  et pas de barre d’outils d’administration (le module remplace le gabarit de la page par un gabarit vide qui
+  exécute quand même `wp_head()`/`wp_footer()`);
+- la fenêtre de clavardage est déjà ouverte et occupe tout l’écran (largeur et hauteur), sans bulle ni bouton pour
+  la réduire; elle respecte l’encoche et la barre d’accueil du téléphone (`viewport-fit=cover`,
+  `env(safe-area-inset-*)`), et la zone de texte est en 16 px pour qu’iOS ne zoome pas pendant la saisie;
+- le clavardage est affiché même si la page n’est pas cochée sous « Afficher le clavardage sur » (il faut quand
+  même une adresse de serveur);
+- la page est marquée `noindex`.
+
+Une seule page peut être choisie. Sur un ordinateur, la page est aussi plein écran (toute la fenêtre). Toutes les
+autres pages gardent la bulle habituelle. Une page vide créée pour l’occasion est idéale : son contenu n’est
+jamais affiché. La vue Web doit permettre JavaScript et le stockage DOM (`setJavaScriptEnabled(true)` et
+`setDomStorageEnabled(true)` sur Android) pour que le clavardage survive à une mise en pause ou un rechargement de
+l’application.
 
 ## Apparence
 

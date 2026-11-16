@@ -72,6 +72,7 @@ langue choisie pour différentes listes de langues du navigateur, langues du sit
 1. Augmentez la version dans `wp-chat/wp-chat.php` (l’en-tête **et** `WP_CHAT_VERSION`) et dans
    `wp-chat/readme.txt`.
 2. Ajoutez une entrée à `CHANGELOG.md` et à `CHANGELOG.fr.md`.
-3. `zip -r wp-chat.zip wp-chat -x "*.DS_Store"`, installez-le sur le site d’essai, lancez les vérifications
-   ci-dessus.
-4. Validez (commit) et étiquetez.
+3. `sh dev/build-zip.sh` : construit `dist/wp-chat-<version>.zip` (refuse si les trois numéros de version
+   diffèrent), recompile les fichiers `.mo` et fait pointer les liens de téléchargement en haut des deux README vers
+   le nouveau zip. Installez ce zip sur le site d’essai et lancez les vérifications ci-dessus.
+4. Validez (commit) **avec le zip** (chaque version a son zip dans `dist/`), puis étiquetez.

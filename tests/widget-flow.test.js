@@ -263,8 +263,18 @@ async function legacyCookieServer() {
   server.close();
 }
 
+function fullscreenPage() {
+  // no server needed: only the initial layout is checked
+  const w = startWidget('http://127.0.0.1:9', { fullscreen: true });
+  const minimize = w.made.find(e => e.className === 'wpc-btn' && e.textContent === '–');
+  check(!w.byClass('wpc-window').hidden && w.byClass('wpc-bubble').hidden, 'full-screen page: the window is open at load, no bubble');
+  check(minimize && minimize.hidden, 'full-screen page: no minimize button');
+  const n = startWidget('http://127.0.0.1:9');
+  check(n.byClass('wpc-window').hidden && !n.byClass('wpc-bubble').hidden, 'normal page: starts as a bubble');
+}
+
 (async () => {
-  try { await tokenMode(); await survivesReload(); await refusedVisitors(); await noRespondentMacro(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
+  try { fullscreenPage(); await tokenMode(); await survivesReload(); await refusedVisitors(); await noRespondentMacro(); await challengeFlow(); await bannedBrowserMarker(); await legacyCookieServer(); }
   catch (e) { failures++; console.log('FAIL', e.message); }
   console.log(failures ? failures + ' failure(s)' : 'all passed');
   process.exit(failures ? 1 : 0);

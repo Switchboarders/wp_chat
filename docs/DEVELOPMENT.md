@@ -70,5 +70,7 @@ language chosen for different browser language lists, site languages and forced 
 
 1. Bump the version in `wp-chat/wp-chat.php` (header **and** `WP_CHAT_VERSION`) and `wp-chat/readme.txt`.
 2. Add an entry to `CHANGELOG.md` and `CHANGELOG.fr.md`.
-3. `zip -r wp-chat.zip wp-chat -x "*.DS_Store"`, install it on the test site, run the checks above.
-4. Commit and tag.
+3. `sh dev/build-zip.sh`: builds `dist/wp-chat-<version>.zip` (it refuses if the three version numbers differ),
+   recompiles the `.mo` files and points the download links at the top of both READMEs to the new zip. Install
+   that zip on the test site and run the checks above.
+4. Commit **with the zip** (every release has its zip in `dist/`), and tag.
