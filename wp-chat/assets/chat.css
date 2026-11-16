@@ -20,7 +20,7 @@
 .wpc-input { flex: 1; min-width: 0; border: 1px solid #ccc; border-radius: 8px; padding: 8px; font: inherit; }
 /* Full-screen chat page (Settings > WP Chat > Full-screen chat page), meant for a mobile app's webview */
 body.wpc-fullscreen-page { margin: 0 !important; padding: 0 !important; overflow: hidden; background: #fff; }
-#wp-chat-root.wpc-fullscreen { top: 0; right: 0; bottom: 0; left: 0; }
+#wp-chat-root.wpc-fullscreen { position: fixed; top: 0; right: 0; bottom: 0; left: 0; }
 #wp-chat-root.wpc-fullscreen .wpc-window { width: 100%; max-width: none; height: 100%; max-height: none; border-radius: 0; box-shadow: none; padding-bottom: env(safe-area-inset-bottom); }
 #wp-chat-root.wpc-fullscreen .wpc-head { padding-top: calc(10px + env(safe-area-inset-top)); padding-left: calc(12px + env(safe-area-inset-left)); padding-right: calc(12px + env(safe-area-inset-right)); }
 #wp-chat-root.wpc-fullscreen .wpc-bubble { display: none; }

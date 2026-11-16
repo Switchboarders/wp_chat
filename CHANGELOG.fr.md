@@ -2,6 +2,12 @@
 
 # Historique des versions
 
+## 0.9.2
+- Correction de la page de clavardage plein écran : le module restait réduit au haut de l’écran, avec un espace
+  vide en dessous, parce que la racine plein écran avait `top/right/bottom/left: 0` sans `position: fixed` —
+  ces décalages n’ont d’effet que sur un élément positionné. La racine est maintenant bien fixée à l’écran, de
+  sorte que le `height: 100%` de la fenêtre de clavardage a quelque chose à remplir.
+
 ## 0.9.1
 - L’avis de consentement place le lien *Politique de confidentialité* et le bouton pour commencer sur des lignes
   distinctes (ils étaient côte à côte, le bouton collé au lien).

@@ -2,6 +2,12 @@
 
 # Changelog
 
+## 0.9.2
+- Fixed the full-screen chat page: the widget stayed shrunk to the top of the screen, with empty space below
+  it, because the fullscreen root had `top/right/bottom/left: 0` without `position: fixed` — those offsets
+  need a positioned element to have any effect. The root is now actually pinned to the viewport, so the chat
+  window's `height: 100%` has something to fill.
+
 ## 0.9.1
 - The consent notice puts the *Privacy policy* link and the start button on separate lines (they were side by
   side, the button stuck to the link).
