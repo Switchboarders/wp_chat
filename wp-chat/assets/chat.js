@@ -235,8 +235,10 @@
 	consent.appendChild(el('p', '', t.retention));
 	if (cfg.officer) { consent.appendChild(el('p', '', t.officer + ' ' + cfg.officer)); }
 	if (cfg.privacyUrl) {
+		// In its own paragraph, so the start button goes below it instead of beside it
 		var a = el('a', '', t.policy); a.href = cfg.privacyUrl; a.target = '_blank'; a.rel = 'noopener';
-		consent.appendChild(a);
+		var policy = el('p', 'wpc-policy'); policy.appendChild(a);
+		consent.appendChild(policy);
 	}
 	var btnStart = el('button', 'wpc-start', t.start); btnStart.type = 'button';
 	consent.appendChild(btnStart);

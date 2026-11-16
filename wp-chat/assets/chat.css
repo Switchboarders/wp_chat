@@ -8,6 +8,7 @@
 .wpc-btn { background: rgba(255,255,255,.2); color: #fff; border: 0; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
 .wpc-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; }
 .wpc-consent p { margin: 0 0 10px; }
+.wpc-consent .wpc-start { display: block; margin-top: 14px; }
 .wpc-start, .wpc-send { background: var(--wpc-color); color: #fff; border: 0; border-radius: 8px; padding: 10px 14px; cursor: pointer; }
 .wpc-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
 .wpc-msg { max-width: 80%; padding: 8px 10px; border-radius: 12px; word-wrap: break-word; white-space: pre-wrap; }

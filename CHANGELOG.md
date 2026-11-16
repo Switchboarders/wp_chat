@@ -2,6 +2,10 @@
 
 # Changelog
 
+## 0.9.1
+- The consent notice puts the *Privacy policy* link and the start button on separate lines (they were side by
+  side, the button stuck to the link).
+
 ## 0.9.0
 - **Full-screen chat page for a mobile app's webview.** New setting *Full-screen chat page (mobile app)*: on the
   one page chosen, the theme (menu, header, content, footer) and the admin toolbar are not shown, and the chat is

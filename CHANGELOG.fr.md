@@ -2,6 +2,10 @@
 
 # Historique des versions
 
+## 0.9.1
+- L’avis de consentement place le lien *Politique de confidentialité* et le bouton pour commencer sur des lignes
+  distinctes (ils étaient côte à côte, le bouton collé au lien).
+
 ## 0.9.0
 - **Page de clavardage plein écran pour la vue Web d’une application mobile.** Nouveau réglage *Page de clavardage
   plein écran (application mobile)* : sur la page choisie, le thème (menu, en-tête, contenu, pied de page) et la
