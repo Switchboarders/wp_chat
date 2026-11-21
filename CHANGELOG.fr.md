@@ -2,6 +2,15 @@
 
 # Historique des versions
 
+## 0.9.3
+- La bulle affiche maintenant **Discuter** (anglais : **Chat**) à côté de son icône, pour que les visiteurs voient à quoi elle sert.
+- La bulle de clavardage et les boutons du module ont maintenant la même apparence peu importe le thème. Certains
+  thèmes (Kadence, par exemple) appliquent leur style à tous les `<button>` de la page : leur marge intérieure
+  (`.4em 1em`) ne laissait qu’environ 4 px à l’icône dans la bulle de 56 px, qui apparaissait comme un petit
+  point ou décentrée, et leurs règles de survol et de focus changeaient sa couleur. Les règles des boutons et du
+  champ de saisie du module commencent maintenant par `#wp-chat-root`, qui l’emporte sur celles du thème, et
+  remettent à zéro marges, hauteur de ligne, transitions et états de survol et de focus.
+
 ## 0.9.2
 - Correction de la page de clavardage plein écran : le module restait réduit au haut de l’écran, avec un espace
   vide en dessous, parce que la racine plein écran avait `top/right/bottom/left: 0` sans `position: fixed` —

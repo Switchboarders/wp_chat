@@ -1,15 +1,19 @@
 #wp-chat-root { --wpc-color: #2b6cb0; position: fixed; right: 16px; bottom: 16px; z-index: 99999; font: 15px/1.4 system-ui, sans-serif; }
 #wp-chat-root * { box-sizing: border-box; }
-.wpc-bubble { width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--wpc-color); color: #fff; font-size: 26px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+/* Themes style every <button> and <input> (Kadence: padding .4em 1em, line-height 1.6, another background on
+   hover/focus). #wp-chat-root in each selector makes ours win over those, whatever the theme. */
+#wp-chat-root button, #wp-chat-root input { margin: 0; min-width: 0; min-height: 0; max-width: none; font-family: inherit; font-weight: normal; line-height: 1.2; letter-spacing: normal; text-transform: none; text-shadow: none; text-decoration: none; text-align: center; vertical-align: middle; transition: none; -webkit-appearance: none; appearance: none; }
+#wp-chat-root .wpc-bubble, #wp-chat-root .wpc-bubble:hover, #wp-chat-root .wpc-bubble:focus, #wp-chat-root .wpc-bubble:active { display: flex; align-items: center; justify-content: center; gap: 8px; width: auto; height: 56px; padding: 0 20px 0 16px; border-radius: 28px; border: 0; background: var(--wpc-color); color: #fff; font-size: 17px; font-weight: 600; line-height: 1; white-space: nowrap; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+#wp-chat-root .wpc-bubble-icon { font-size: 24px; }
 .wpc-window { width: 340px; max-width: calc(100vw - 32px); height: 480px; max-height: calc(100vh - 32px); background: #fff; color: #222; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,.3); display: flex; flex-direction: column; overflow: hidden; }
 .wpc-window[hidden], .wpc-bubble[hidden], #wp-chat-root [hidden] { display: none !important; }
 .wpc-head { background: var(--wpc-color); color: #fff; padding: 10px 12px; display: flex; align-items: center; gap: 6px; }
 .wpc-title { flex: 1; font-weight: 600; }
-.wpc-btn { background: rgba(255,255,255,.2); color: #fff; border: 0; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
+#wp-chat-root .wpc-btn, #wp-chat-root .wpc-btn:hover, #wp-chat-root .wpc-btn:focus, #wp-chat-root .wpc-btn:active { display: inline-block; box-shadow: none; background: rgba(255,255,255,.2); color: #fff; border: 0; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
 .wpc-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; }
 .wpc-consent p { margin: 0 0 10px; }
-.wpc-consent .wpc-start { display: block; margin-top: 14px; }
-.wpc-start, .wpc-send { background: var(--wpc-color); color: #fff; border: 0; border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+#wp-chat-root .wpc-consent .wpc-start { display: block; margin-top: 14px; }
+#wp-chat-root .wpc-start, #wp-chat-root .wpc-send, #wp-chat-root .wpc-start:hover, #wp-chat-root .wpc-send:hover, #wp-chat-root .wpc-start:focus, #wp-chat-root .wpc-send:focus, #wp-chat-root .wpc-start:active, #wp-chat-root .wpc-send:active { box-shadow: none; font-size: 15px; background: var(--wpc-color); color: #fff; border: 0; border-radius: 8px; padding: 10px 14px; cursor: pointer; }
 .wpc-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
 .wpc-msg { max-width: 80%; padding: 8px 10px; border-radius: 12px; word-wrap: break-word; white-space: pre-wrap; }
 .wpc-mine { align-self: flex-end; background: var(--wpc-color); color: #fff; }
@@ -17,11 +21,11 @@
 .wpc-notice { align-self: center; font-size: 12px; color: #666; text-align: center; }
 .wpc-typing { font-size: 12px; color: #666; padding-top: 4px; }
 .wpc-form { display: flex; gap: 6px; padding: 8px; border-top: 1px solid #ddd; }
-.wpc-input { flex: 1; min-width: 0; border: 1px solid #ccc; border-radius: 8px; padding: 8px; font: inherit; }
+#wp-chat-root .wpc-input { flex: 1; height: auto; background: #fff; color: #222; box-shadow: none; text-align: left; min-width: 0; border: 1px solid #ccc; border-radius: 8px; padding: 8px; font: inherit; }
 /* Full-screen chat page (Settings > WP Chat > Full-screen chat page), meant for a mobile app's webview */
 body.wpc-fullscreen-page { margin: 0 !important; padding: 0 !important; overflow: hidden; background: #fff; }
 #wp-chat-root.wpc-fullscreen { position: fixed; top: 0; right: 0; bottom: 0; left: 0; }
 #wp-chat-root.wpc-fullscreen .wpc-window { width: 100%; max-width: none; height: 100%; max-height: none; border-radius: 0; box-shadow: none; padding-bottom: env(safe-area-inset-bottom); }
 #wp-chat-root.wpc-fullscreen .wpc-head { padding-top: calc(10px + env(safe-area-inset-top)); padding-left: calc(12px + env(safe-area-inset-left)); padding-right: calc(12px + env(safe-area-inset-right)); }
-#wp-chat-root.wpc-fullscreen .wpc-bubble { display: none; }
+#wp-chat-root.wpc-fullscreen .wpc-bubble { display: none !important; }
 #wp-chat-root.wpc-fullscreen .wpc-input { font-size: 16px; } /* 16px or more: iOS does not zoom in on focus */

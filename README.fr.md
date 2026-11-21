@@ -1,6 +1,6 @@
 [English](README.md) · **Français**
 
-> **Télécharger :** [dernière version (dist/wp-chat-0.9.2.zip)](dist/wp-chat-0.9.2.zip) · [toutes les versions](dist/) ·
+> **Télécharger :** [dernière version (dist/wp-chat-0.9.3.zip)](dist/wp-chat-0.9.3.zip) · [toutes les versions](dist/) ·
 > [historique des versions](CHANGELOG.fr.md)
 
 # WP Chat

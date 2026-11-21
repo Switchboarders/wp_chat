@@ -2,6 +2,14 @@
 
 # Changelog
 
+## 0.9.3
+- The bubble now says **Chat** (French: **Discuter**) next to its icon, so visitors see what it is for.
+- The chat bubble and the widget's buttons now look the same whatever the theme. Some themes (Kadence, for
+  example) style every `<button>` on the page: their padding (`.4em 1em`) left about 4 px for the icon in the
+  56 px bubble, so it showed up as a small dot or off-centre, and their hover/focus rules changed its colour.
+  The widget's button and input rules now start with `#wp-chat-root`, which wins over the theme's, and reset
+  padding, line height, margins, transitions and hover/focus states.
+
 ## 0.9.2
 - Fixed the full-screen chat page: the widget stayed shrunk to the top of the screen, with empty space below
   it, because the fullscreen root had `top/right/bottom/left: 0` without `position: fixed` — those offsets

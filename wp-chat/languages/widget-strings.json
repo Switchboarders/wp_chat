@@ -1,6 +1,7 @@
 {
 	"en": {
 		"open": "Open chat",
+		"bubble": "Chat",
 		"minimize": "Minimize chat",
 		"title": "Talk to someone",
 		"consent": "This chat is confidential. We do not keep your messages on this website.",
@@ -23,6 +24,7 @@
 	},
 	"fr": {
 		"open": "Ouvrir le clavardage",
+		"bubble": "Discuter",
 		"minimize": "Réduire la fenêtre",
 		"title": "Parler à quelqu’un",
 		"consent": "Ce clavardage est confidentiel. Nous ne conservons pas vos messages sur ce site Web.",

@@ -215,7 +215,8 @@
 	var bubble = el('button', 'wpc-bubble');
 	bubble.type = 'button';
 	bubble.setAttribute('aria-label', t.open);
-	bubble.textContent = '💬';
+	bubble.appendChild(el('span', 'wpc-bubble-icon', '💬'));
+	bubble.appendChild(el('span', 'wpc-bubble-label', t.bubble));
 
 	var win = el('div', 'wpc-window');
 	win.hidden = true;
