@@ -114,6 +114,26 @@
 	window.WPChat.sha256 = sha256;
 	window.WPChat.zeroBits = zeroBits;
 	window.WPChat.solvePow = solvePow;
+
+	// Splits a message into plain text and web links (http://, https:// or www.), so links can be shown
+	// as clickable <a> elements while everything else stays plain text (never parsed as HTML).
+	// Punctuation that ends a sentence is not part of the link: "see https://aa89.org/mg." links to /mg.
+	function splitLinks(text) {
+		var parts = [], re = /\b(?:https?:\/\/|www\.)[^\s<>"]+/gi, last = 0, m;
+		while ((m = re.exec(text)) !== null) {
+			var url = m[0];
+			while (/[.,;:!?'»”]$/.test(url) || (/\)$/.test(url) && url.split('(').length < url.split(')').length)) {
+				url = url.slice(0, -1);
+			}
+			if (m.index > last) { parts.push({ text: text.slice(last, m.index) }); }
+			parts.push({ text: url, href: /^www\./i.test(url) ? 'https://' + url : url });
+			last = m.index + url.length;
+			re.lastIndex = last;
+		}
+		if (last < text.length) { parts.push({ text: text.slice(last) }); }
+		return parts;
+	}
+	window.WPChat.splitLinks = splitLinks;
 	var cfg = window.WPChatConfig;
 	var root = document.getElementById('wp-chat-root');
 	if (!cfg || !root) { return; }
@@ -257,7 +277,16 @@
 	root.appendChild(bubble); root.appendChild(win);
 
 	function addMsg(text, mine) {
-		var m = el('div', 'wpc-msg ' + (mine ? 'wpc-mine' : 'wpc-theirs'), text);
+		var parts = splitLinks(String(text || ''));
+		var m = el('div', 'wpc-msg ' + (mine ? 'wpc-mine' : 'wpc-theirs'), parts.length === 1 && !parts[0].href ? text : '');
+		if (parts.length > 1 || (parts[0] && parts[0].href)) {
+			parts.forEach(function (p) {
+				if (!p.href) { m.appendChild(el('span', '', p.text)); return; }
+				var a = el('a', 'wpc-link', p.text);
+				a.href = p.href; a.target = '_blank'; a.rel = 'noopener noreferrer nofollow';
+				m.appendChild(a);
+			});
+		}
 		log.appendChild(m);
 		log.scrollTop = log.scrollHeight;
 	}

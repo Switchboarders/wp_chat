@@ -2,6 +2,11 @@
 
 # Changelog
 
+## 0.9.4
+- Links in messages are clickable: `https://…`, `http://…` and `www.…` open in a new tab. A period or
+  closing parenthesis right after a link is not part of it. Everything else in a message is still shown as
+  plain text (never read as HTML), and only web links are made clickable.
+
 ## 0.9.3
 - The bubble now says **Chat** (French: **Discuter**) next to its icon, so visitors see what it is for.
 - The chat bubble and the widget's buttons now look the same whatever the theme. Some themes (Kadence, for

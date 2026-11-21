@@ -27,7 +27,8 @@ function startWidget(base, extraCfg, storage, session) {
   function EventSource(url, opts) { esCreated.push({ url, opts }); this.addEventListener = () => {}; this.close = () => {}; }
   vm.runInNewContext(code, { window, document, navigator: window.navigator, EventSource, fetch, AbortController, TextDecoder, Blob, JSON, Math, setTimeout, clearTimeout });
   const byClass = c => made.find(e => e.className === c);
-  const texts = () => made.filter(e => /^wpc-(msg|notice)/.test(e.className || '')).map(e => (e.className.includes('notice') ? '[notice] ' : '') + e.textContent);
+  const text = e => e.textContent || e.children.map(text).join('');
+  const texts = () => made.filter(e => /^wpc-(msg|notice)/.test(e.className || '')).map(e => (e.className.includes('notice') ? '[notice] ' : '') + text(e));
   return { root, made, byClass, texts, winListeners, beacons, esCreated };
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -56,6 +57,7 @@ async function tokenMode() {
           setTimeout(() => res.end(), 150);
         } else {
           setTimeout(() => res.write('event: message\ndata: {"text":"Encore ici"}\n\n'), 30);
+          setTimeout(() => res.write('event: message\ndata: {"text":"Voir https://aa89.org/mg."}\n\n'), 50);
           setTimeout(() => res.end(), 100);
         }
         return;
@@ -78,6 +80,9 @@ async function tokenMode() {
   check(log.messages[0].auth === 'Bearer tok123' && log.messages[0].body.text === 'Salut', 'token mode: message sent with the token');
   await until(() => w.texts().includes('Encore ici'), 'reconnection after the stream dropped', 6000);
   check(log.streams >= 2, 'token mode: the widget reconnects after the stream is cut');
+  await until(() => w.texts().includes('Voir https://aa89.org/mg.'), 'message with a link');
+  const link = w.made.find(e => e.tag === 'a' && e.className === 'wpc-link');
+  check(link && link.href === 'https://aa89.org/mg' && link.target === '_blank' && /noopener/.test(link.rel), 'a link from a respondent is clickable, opens in a new tab');
   await until(() => w.texts().some(t => t.startsWith('[notice] ') && t.includes('ended')), 'ended notice after a 401', 8000);
   check(true, 'token mode: a 401 on the stream ends the chat (expired / ended)');
   server.close();

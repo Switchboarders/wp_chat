@@ -2,6 +2,11 @@
 
 # Historique des versions
 
+## 0.9.4
+- Les liens dans les messages sont cliquables : `https://…`, `http://…` et `www.…` s’ouvrent dans un nouvel
+  onglet. Un point ou une parenthèse fermante juste après un lien n’en fait pas partie. Le reste du message est
+  toujours affiché comme du texte simple (jamais lu comme du HTML), et seuls les liens Web deviennent cliquables.
+
 ## 0.9.3
 - La bulle affiche maintenant **Discuter** (anglais : **Chat**) à côté de son icône, pour que les visiteurs voient à quoi elle sert.
 - La bulle de clavardage et les boutons du module ont maintenant la même apparence peu importe le thème. Certains

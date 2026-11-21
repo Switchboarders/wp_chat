@@ -1,6 +1,6 @@
 **English** · [Français](README.fr.md)
 
-> **Download:** [latest release (dist/wp-chat-0.9.3.zip)](dist/wp-chat-0.9.3.zip) · [all releases](dist/) ·
+> **Download:** [latest release (dist/wp-chat-0.9.4.zip)](dist/wp-chat-0.9.4.zip) · [all releases](dist/) ·
 > [changelog](CHANGELOG.md)
 
 # WP Chat
